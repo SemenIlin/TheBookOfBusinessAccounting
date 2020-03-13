@@ -1,13 +1,12 @@
 ﻿using DALTheBookBusinessAccounting.Entities;
 using DALTheBookBusinessAccounting.Interfaces;
-using System;
 using System.Collections.Generic;
 using System.Configuration;
 using System.Data.SqlClient;
 
 namespace DALTheBookBusinessAccounting.Repositories
 {
-    public class CategoryRepository : IRepository<Category>
+    public class CategoryRepository : IRepository<Category>, IReadRepository<Category>
     {
         private const int ID = 0;
         private const int TITLE = 1;
@@ -62,11 +61,6 @@ namespace DALTheBookBusinessAccounting.Repositories
                     command.ExecuteNonQuery();
                 }
             }
-        }
-
-        public IEnumerable<Category> Find(Func<Category, bool> predicate)
-        {
-            throw new NotImplementedException();
         }
 
         public Category Get(int id)

@@ -1,6 +1,5 @@
 ﻿using DALTheBookBusinessAccounting.Entities;
 using DALTheBookBusinessAccounting.Interfaces;
-using System;
 using System.Collections.Generic;
 using System.Configuration;
 using System.Data.SqlClient;
@@ -14,11 +13,6 @@ namespace DALTheBookBusinessAccounting.Repositories
 
         private readonly string connectionString = ConfigurationManager.ConnectionStrings["TheBookOfBusinessAccountingContext"].ConnectionString;
           
-        public IEnumerable<Status> Find(Func<Status, bool> predicate)
-        {
-            throw new NotImplementedException();
-        }
-
         public Status Get(int id)
         {
             const string SQL_EXPRESSION = "GetStatus";

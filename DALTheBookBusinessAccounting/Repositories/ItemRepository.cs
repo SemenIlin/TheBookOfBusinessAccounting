@@ -1,13 +1,12 @@
 ﻿using DALTheBookBusinessAccounting.Entities;
 using DALTheBookBusinessAccounting.Interfaces;
-using System;
 using System.Collections.Generic;
 using System.Configuration;
 using System.Data.SqlClient;
 
 namespace DALTheBookBusinessAccounting.Repositories
 {
-    public class ItemRepository : IRepository<Item>
+    public class ItemRepository : IRepository<Item>, IReadRepository<Item>, IFindRepository<Item>
     {
         private const int ID = 0;
         private const int TITLE = 1;
@@ -103,9 +102,67 @@ namespace DALTheBookBusinessAccounting.Repositories
             }
         }
 
-        public IEnumerable<Item> Find(Func<Item, bool> predicate)
+        public IEnumerable<Item> Find(string text)
         {
-            throw new NotImplementedException();
+            return Find(text, 0, 0);
+        }
+
+
+        public IEnumerable<Item> Find(string text, int status = 0, int category = 0)
+        {
+            const string SQL_EXPRESSION = "FindItem";
+
+            List<Item> items = new List<Item>();
+            using (SqlConnection connection = new SqlConnection(connectionString))
+            {
+                connection.Open();
+                using (SqlCommand command = new SqlCommand(SQL_EXPRESSION, connection)
+                {
+                    CommandType = System.Data.CommandType.StoredProcedure// указываем, что команда представляет хранимую процедуру
+                })
+                {
+                    SqlParameter textParam = new SqlParameter // параметр для ввода id
+                    {
+                        ParameterName = "@Name",
+                        Value = text
+                    };
+                    command.Parameters.Add(textParam);// добавляем параметр
+
+                    SqlParameter categoryParam = new SqlParameter // параметр для ввода id
+                    {
+                        ParameterName = "@CategoryId",
+                        Value = category
+                    };
+                    command.Parameters.Add(categoryParam);// добавляем параметр
+
+                    SqlParameter statusParam = new SqlParameter // параметр для ввода id
+                    {
+                        ParameterName = "@StatusId",
+                        Value = status
+                    };
+                    command.Parameters.Add(statusParam);// добавляем параметр
+
+                    SqlDataReader reader = command.ExecuteReader();
+                    if (reader.HasRows) // если есть данные
+                    {
+                        while (reader.Read()) // построчно считываем данные
+                        {
+                            items.Add(new Item
+                            {
+                                Id = reader.GetInt32(ID),
+                                Title = reader.GetString(TITLE),
+                                InventoryNumber = reader.GetString(INVENTORY_NUMBER),
+                                LocationOfItem = reader.GetString(LOCATION_OF_ITEM),
+                                About = reader.GetString(ABOUT),
+                                CategoryId = reader.GetInt32(CATEGORY_ID),
+                                StatusId = reader.GetInt32(STATUS_ID)
+                            });
+                        }
+                    }
+                }
+            }
+
+            return items;
         }
 
         public Item Get(int id)

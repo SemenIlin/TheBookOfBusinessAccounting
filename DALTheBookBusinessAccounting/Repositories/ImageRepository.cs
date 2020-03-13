@@ -1,13 +1,12 @@
 ﻿using DALTheBookBusinessAccounting.Entities;
 using DALTheBookBusinessAccounting.Interfaces;
-using System;
 using System.Collections.Generic;
 using System.Configuration;
 using System.Data.SqlClient;
 
 namespace DALTheBookBusinessAccounting.Repositories
 {
-    public class ImageRepository : IRepository<Image>
+    public class ImageRepository : IRepository<Image>, IReadRepository<Image>
     {
         private const int ID = 0;
         private const int SCREEN_FORMAT = 2;
@@ -77,12 +76,7 @@ namespace DALTheBookBusinessAccounting.Repositories
                 }
             }
         }
-
-        public IEnumerable<Image> Find(Func<Image, bool> predicate)
-        {
-            throw new NotImplementedException();
-        }
-
+        
         public Image Get(int id)
         {
             const string SQL_EXPRESSION = "GetImages";
