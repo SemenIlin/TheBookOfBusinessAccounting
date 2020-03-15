@@ -2,9 +2,9 @@
 
 namespace Common.Exceptions
 {
-    public class ItemException : Exception
+    public class NotFoundException : Exception
     {
-        public ItemException(string message, string prop) : base(message)
+        public NotFoundException(string message, string prop) : base(message)
         {
             Property = prop;
         }

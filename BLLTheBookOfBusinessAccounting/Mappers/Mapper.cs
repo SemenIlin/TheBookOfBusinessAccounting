@@ -6,19 +6,19 @@ using System.Linq;
 namespace BLLTheBookOfBusinessAccounting.Mappers
 {
     public static class Mapper
-    {      
+    {
         public static Item MapToDbModel(this ItemDto itemDto)
         {
             return new Item()
             {
                 Id = itemDto.Id,
-                Title =itemDto.Title,
+                Title = itemDto.Title,
                 InventoryNumber = itemDto.InventoryNumber,
                 LocationOfItem = itemDto.LocationOfItem,
                 About = itemDto.About,
-                Images = itemDto.Images,
+                Images = itemDto.ImageDtos.MapToCollectionDBModels(),
                 StatusId = itemDto.StatusId,
-                CategoryId = itemDto.CategoryId            
+                CategoryId = itemDto.CategoryId
             };
         }
 
@@ -33,7 +33,9 @@ namespace BLLTheBookOfBusinessAccounting.Mappers
                 LocationOfItem = item.LocationOfItem,
                 CategoryId = item.CategoryId,
                 StatusId = item.StatusId,
-                Images =item.Images
+                Status = item.StatusName,
+                ImageDtos = item.Images.MapToCollectionDtoModels(),
+                Category = item.CategoryName
             };
         }
 
@@ -41,7 +43,7 @@ namespace BLLTheBookOfBusinessAccounting.Mappers
         {
             return items.Select(item => item.MapToDtoModel());
         }
-        
+
         public static Category MapToDbModel(this CategoryDto categoryDto)
         {
             return new Category()
@@ -51,6 +53,81 @@ namespace BLLTheBookOfBusinessAccounting.Mappers
             };
         }
 
+        public static CategoryDto MapToDtoModel(this Category category)
+        {
+            return new CategoryDto()
+            {
+                Id = category.Id,
+                Title = category.Title
+            };
+        }
 
+        public static IEnumerable<CategoryDto> MapToListDtoModels(this IEnumerable<Category> categories)
+        {
+            return categories.Select(category => category.MapToDtoModel());
+        }
+
+        public static StatusDto MapToDtoModel(this Status status)
+        {
+            return new StatusDto()
+            {
+                Id = status.Id,
+                Title = status.Title,
+            };
+        }
+
+        public static IEnumerable<StatusDto> MapToListDtoModels(this IEnumerable<Status> statuses)
+        {
+            return statuses.Select(status => status.MapToDtoModel());
+        }
+
+        public static ImageDto MapToDtoModel(this Image image)
+        {
+            return new ImageDto()
+            {
+                Id = image.Id,
+                Screen = image.Screen,
+                ScreenFormat = image.ScreenFormat,
+                ItemId = image.ItemId
+            };
+        }
+
+        public static Image MapToDbModel(this ImageDto imageDto)
+        {
+            return new Image()
+            {
+                Id = imageDto.Id,
+                Screen = imageDto.Screen,
+                ScreenFormat = imageDto.ScreenFormat,
+                ItemId = imageDto.ItemId
+            };
+        }
+
+        public static IEnumerable<ImageDto> MapToListDtoModels(this IEnumerable<Image> images)
+        {
+            return images.Select(image => image.MapToDtoModel());
+        }
+
+        private static ICollection<ImageDto> MapToCollectionDtoModels(this ICollection<Image> items)
+        {
+            var collectionByImage = new List<ImageDto>();
+            foreach (var item in items)
+            {
+                collectionByImage.Add(item.MapToDtoModel());
+            }
+
+            return collectionByImage;
+        }
+
+        private static ICollection<Image> MapToCollectionDBModels(this ICollection<ImageDto> itemDtos)
+        {
+            var collectionByImage = new List<Image>();
+            foreach (var itemDto in itemDtos)
+            {
+                collectionByImage.Add(itemDto.MapToDbModel());
+            }
+
+            return collectionByImage;
+        }
     }
 }

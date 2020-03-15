@@ -6,7 +6,7 @@ using System.Data.SqlClient;
 
 namespace DALTheBookBusinessAccounting.Repositories
 {
-    public class ItemRepository : IRepository<Item>, IReadRepository<Item>, IFindRepository<Item>
+    public class ItemRepository : IRepository<Item>
     {
         private const int ID = 0;
         private const int TITLE = 1;
@@ -15,6 +15,7 @@ namespace DALTheBookBusinessAccounting.Repositories
         private const int ABOUT = 4;
         private const int CATEGORY_ID = 5;
         private const int STATUS_ID = 6;
+        private const int CATEGORY_NAME = 7;
 
         private readonly string connectionString = ConfigurationManager.ConnectionStrings["TheBookOfBusinessAccountingContext"].ConnectionString;
 
@@ -101,12 +102,6 @@ namespace DALTheBookBusinessAccounting.Repositories
                 }
             }
         }
-
-        public IEnumerable<Item> Find(string text)
-        {
-            return Find(text, 0, 0);
-        }
-
 
         public IEnumerable<Item> Find(string text, int status = 0, int category = 0)
         {
@@ -200,6 +195,7 @@ namespace DALTheBookBusinessAccounting.Repositories
                             item.About = reader.GetString(ABOUT);
                             item.CategoryId = reader.GetInt32(CATEGORY_ID);
                             item.StatusId = reader.GetInt32(STATUS_ID);
+                            item.CategoryName = reader.GetString(CATEGORY_NAME);
                         }
                     }
                 }
@@ -234,7 +230,8 @@ namespace DALTheBookBusinessAccounting.Repositories
                                 LocationOfItem = reader.GetString(LOCATION_OF_ITEM),
                                 About = reader.GetString(ABOUT),
                                 CategoryId = reader.GetInt32(CATEGORY_ID),
-                                StatusId = reader.GetInt32(STATUS_ID)
+                                StatusId = reader.GetInt32(STATUS_ID),
+                                CategoryName = reader.GetString(CATEGORY_NAME)
                             });
                         }
                     }

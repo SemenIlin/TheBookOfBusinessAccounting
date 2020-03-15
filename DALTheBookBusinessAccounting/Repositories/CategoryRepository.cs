@@ -6,7 +6,7 @@ using System.Data.SqlClient;
 
 namespace DALTheBookBusinessAccounting.Repositories
 {
-    public class CategoryRepository : IRepository<Category>, IReadRepository<Category>
+    public class CategoryRepository : IReadAndEditRepository<Category>
     {
         private const int ID = 0;
         private const int TITLE = 1;

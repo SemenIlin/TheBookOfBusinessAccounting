@@ -6,7 +6,7 @@ using System.Data.SqlClient;
 
 namespace DALTheBookBusinessAccounting.Repositories
 {
-    public class ImageRepository : IRepository<Image>, IReadRepository<Image>
+    public class ImageRepository : IReadAndEditRepository<Image>
     {
         private const int ID = 0;
         private const int SCREEN_FORMAT = 2;

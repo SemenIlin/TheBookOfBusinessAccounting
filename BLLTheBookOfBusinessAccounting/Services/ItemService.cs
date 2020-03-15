@@ -8,18 +8,12 @@ using Common.Exceptions;
 
 namespace BLLTheBookOfBusinessAccounting.Services
 {
-    public class ItemService : IFindService<ItemDto>, IReadService<ItemDto>, IService<ItemDto>
+    public class ItemService :  IService<ItemDto>
     {
-        private readonly IFindRepository<Item> _findItem;
-        private readonly IReadRepository<Item> _readItem;
         private readonly IRepository<Item> _repositoryItem;
 
-        public ItemService(IFindRepository<Item> findItem,
-                           IReadRepository<Item> readItem,
-                           IRepository<Item> repositoryItem)
+        public ItemService(IRepository<Item> repositoryItem)
         {
-            _findItem = findItem;
-            _readItem = readItem;
             _repositoryItem = repositoryItem;        
         }
 
@@ -33,22 +27,17 @@ namespace BLLTheBookOfBusinessAccounting.Services
             _repositoryItem.Delete(id);
         }
 
-        public IEnumerable<ItemDto> Find(string text)
-        {
-            return Find(text, 0, 0);
-        }
-
         public IEnumerable<ItemDto> Find(string text, int status = 0, int category = 0)
         {
-            return _findItem.Find(text, category, status).MapToListDtoModels();
+            return _repositoryItem.Find(text, category, status).MapToListDtoModels();
         }
 
         public ItemDto Get(int id)
         {
-            var item = _readItem.Get(id);
+            var item = _repositoryItem.Get(id);
             if(item == null)
             {
-                throw new ItemException("Предмет не найден","");
+                throw new NotFoundException("Предмет не найден","");
             }
 
             return item.MapToDtoModel();
@@ -56,7 +45,7 @@ namespace BLLTheBookOfBusinessAccounting.Services
 
         public IEnumerable<ItemDto> GetAll()
         {
-            return _readItem.GetAll().MapToListDtoModels();
+            return _repositoryItem.GetAll().MapToListDtoModels();
         }
 
         public void Update(ItemDto itemDto)

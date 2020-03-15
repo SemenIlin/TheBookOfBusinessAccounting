@@ -1,8 +1,8 @@
 ﻿using System.Collections.Generic;
 
-namespace BLLTheBookOfBusinessAccounting.ModelsDto
+namespace TheBookBusinessAccounting.Models
 {
-    public class ItemDto
+    public class ItemViewModel
     {
         public int Id { get; set; }
         public string Title { get; set; }
@@ -11,7 +11,7 @@ namespace BLLTheBookOfBusinessAccounting.ModelsDto
         public string About { get; set; }
         public string Category { get; set; }
         public string Status { get; set; }
-        public ICollection<ImageDto> ImageDtos { get; set; }
+        public ICollection<ImageViewModel> ImageViewModels { get; set; }
 
         public int CategoryId { get; set; }
         public int StatusId { get; set; }

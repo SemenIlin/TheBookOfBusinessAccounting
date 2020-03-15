@@ -1,52 +1,51 @@
 ﻿using BLLTheBookOfBusinessAccounting.Interfaces;
+using BLLTheBookOfBusinessAccounting.Mappers;
 using BLLTheBookOfBusinessAccounting.ModelsDto;
+using Common.Exceptions;
 using DALTheBookBusinessAccounting.Entities;
 using DALTheBookBusinessAccounting.Interfaces;
-using System;
 using System.Collections.Generic;
-using System.Text;
 
 namespace BLLTheBookOfBusinessAccounting.Services
 {
-    public class CategoryService : IService<CategoryDto>, IReadService<CategoryDto>
+    public class CategoryService : IReadAndEditService<CategoryDto>
     {
-        private readonly IRepository<Category> _categoryRepository;
-        private readonly IReadRepository<Category> _categoryReadRepository;
+        private readonly IReadAndEditRepository<Category> _categoryReadAndEditRepository;
 
-        public CategoryService(
-            IRepository<Category> categoryRepository,
-            IReadRepository<Category> categoryReadRepository
-            )
+        public CategoryService(IReadAndEditRepository<Category> categoryReadAndEditRepository)
         {
-            _categoryRepository = categoryRepository;
-            _categoryReadRepository = categoryReadRepository;
+            _categoryReadAndEditRepository = categoryReadAndEditRepository;
         }
             
-        public void Add(CategoryDto item)
+        public void Add(CategoryDto categoryDto)
         {
-            throw new NotImplementedException();
+            _categoryReadAndEditRepository.Create(categoryDto.MapToDbModel());
         }
 
-        public void Update(CategoryDto item)
+        public void Update(CategoryDto categoryDto)
         {
-            throw new NotImplementedException();
+            _categoryReadAndEditRepository.Update(categoryDto.MapToDbModel());
         }
 
         public void Delete(int id)
         {
-            throw new NotImplementedException();
+            _categoryReadAndEditRepository.Delete(id);
         }
 
         public CategoryDto Get(int id)
         {
-            throw new NotImplementedException();
+            var category = _categoryReadAndEditRepository.Get(id);
+            if(category == null)
+            {
+                throw new NotFoundException("Данная категория не найдена.", "");
+            }
+
+            return category.MapToDtoModel();
         }
 
         public IEnumerable<CategoryDto> GetAll()
         {
-            throw new NotImplementedException();
+            return _categoryReadAndEditRepository.GetAll().MapToListDtoModels();
         }
-
-
     }
 }

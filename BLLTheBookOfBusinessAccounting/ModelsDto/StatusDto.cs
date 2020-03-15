@@ -1,6 +1,6 @@
 ﻿namespace BLLTheBookOfBusinessAccounting.ModelsDto
 {
-    public class CategoryDto
+    public class StatusDto
     {
         public int Id { get; set; }
         public string Title { get; set; }

@@ -15,6 +15,8 @@ namespace DALTheBookBusinessAccounting.Entities
         public string InventoryNumber { get; set; }
         public string LocationOfItem { get; set; }
         public string About { get; set; }
+        public string CategoryName { get; set; }
+        public string StatusName { get; set; }
 
         public Category Category { get; set; }
         public int CategoryId { get; set; }
