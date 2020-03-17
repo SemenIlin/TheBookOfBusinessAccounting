@@ -1,0 +1,31 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 16
+VisualStudioVersion = 16.0.29411.108
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TheBookBusinessAccounting", "TheBookBusinessAccounting\TheBookBusinessAccounting.csproj", "{3EEDDC93-B901-4D5E-9463-EF872CB07E2B}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DALTheBookBusinessAccounting", "DALTheBookBusinessAccounting\DALTheBookBusinessAccounting.csproj", "{A55769EB-F51D-451F-9ACA-D0D2F6E66FBF}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{3EEDDC93-B901-4D5E-9463-EF872CB07E2B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{3EEDDC93-B901-4D5E-9463-EF872CB07E2B}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{3EEDDC93-B901-4D5E-9463-EF872CB07E2B}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{3EEDDC93-B901-4D5E-9463-EF872CB07E2B}.Release|Any CPU.Build.0 = Release|Any CPU
+		{A55769EB-F51D-451F-9ACA-D0D2F6E66FBF}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{A55769EB-F51D-451F-9ACA-D0D2F6E66FBF}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{A55769EB-F51D-451F-9ACA-D0D2F6E66FBF}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{A55769EB-F51D-451F-9ACA-D0D2F6E66FBF}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {14500D3E-10C7-4DA5-8D35-5F998AED5037}
+	EndGlobalSection
+EndGlobal
