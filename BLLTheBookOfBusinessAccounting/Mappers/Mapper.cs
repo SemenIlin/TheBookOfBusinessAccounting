@@ -108,12 +108,12 @@ namespace BLLTheBookOfBusinessAccounting.Mappers
             return images.Select(image => image.MapToDtoModel());
         }
 
-        private static ICollection<ImageDto> MapToCollectionDtoModels(this ICollection<Image> items)
+        private static ICollection<ImageDto> MapToCollectionDtoModels(this ICollection<Image> images)
         {
             var collectionByImage = new List<ImageDto>();
-            foreach (var item in items)
+            foreach (var image in images)
             {
-                collectionByImage.Add(item.MapToDtoModel());
+                collectionByImage.Add(image.MapToDtoModel());
             }
 
             return collectionByImage;

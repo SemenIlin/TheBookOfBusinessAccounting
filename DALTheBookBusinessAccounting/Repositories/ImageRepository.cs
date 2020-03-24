@@ -103,12 +103,13 @@ namespace DALTheBookBusinessAccounting.Repositories
 
                     if (reader.HasRows)
                     {
+                        image = new Image();
+
                         while (reader.Read())
                         {
-                            image.Id = reader.GetInt32(ID);
-                            image.Screen = (byte [])reader["Screen"];
                             image.ScreenFormat = reader.GetString(SCREEN_FORMAT);
-                            image.ItemId = reader.GetInt32(ITEM_ID);                            
+                            image.ItemId = reader.GetInt32(ITEM_ID);
+                            image.Screen = (byte[])reader["Screen"];
                         }
                     }
                 }
@@ -148,7 +149,7 @@ namespace DALTheBookBusinessAccounting.Repositories
             }
 
             return images;
-        }
+        }        
 
         public void Update(Image image)
         {

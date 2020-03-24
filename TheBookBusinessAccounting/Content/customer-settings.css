@@ -1,0 +1,14 @@
+﻿.button {
+	font-family: Tahoma;
+	color: black;
+	word-break: break-all;
+	word-wrap: break-word;
+}
+
+body tr :nth-child (odd) {
+	background-color: #C9E4F6; /* фон нечетных строк */
+}
+
+body tr :nth-child (even) {
+	background-color: #B4DAF2; /* фон четных строк */
+}

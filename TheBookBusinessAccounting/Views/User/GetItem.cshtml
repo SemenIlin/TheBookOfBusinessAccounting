@@ -1,0 +1,65 @@
+﻿@model TheBookBusinessAccounting.Models.ItemViewModel
+
+@{
+    ViewBag.Title = "GetItem";
+}
+
+<div>
+	<h4>@Html.DisplayFor(model => model.Title)</h4>
+    <hr />
+	<dl class="dl-horizontal">		
+		<dt>
+			@Html.DisplayNameFor(model => model.InventoryNumber)
+		</dt>
+
+		<dd>
+			@Html.DisplayFor(model => model.InventoryNumber)
+		</dd>
+
+		<dt>
+			@Html.DisplayNameFor(model => model.LocationOfItem)
+		</dt>
+
+		<dd>
+			@Html.DisplayFor(model => model.LocationOfItem)
+		</dd>
+
+		<dt>
+			@Html.DisplayNameFor(model => model.About)
+		</dt>
+
+		<dd>
+			@Html.DisplayFor(model => model.About)
+		</dd>
+
+		<dt>
+			@Html.DisplayNameFor(model => model.Category)
+		</dt>
+
+		<dd>
+			@Html.DisplayFor(model => model.Category)
+		</dd>
+
+		<dt>
+			@Html.DisplayNameFor(model => model.Status)
+		</dt>
+
+		<dd>
+			@Html.DisplayFor(model => model.Status)
+		</dd>
+		@foreach (var image in Model.ImageViewModels)
+		{
+			<dt>
+				@Html.DisplayNameFor(model => model.ImageViewModels)
+			</dt>
+
+			<dd>
+				@Html.Raw("<img style='width:200px; height:200px;' src=\"data:image/jpeg;base64,"
+										 + Convert.ToBase64String(image.Screen) + "\" />")
+			</dd>
+		}
+	</dl>
+</div>
+<p>
+    @Html.ActionLink("Edit", "Edit", new { id = Model.Id }) 
+</p>

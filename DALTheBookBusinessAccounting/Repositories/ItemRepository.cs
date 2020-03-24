@@ -16,6 +16,9 @@ namespace DALTheBookBusinessAccounting.Repositories
         private const int CATEGORY_ID = 5;
         private const int STATUS_ID = 6;
         private const int CATEGORY_NAME = 7;
+        private const int STATUS_NAME = 8;
+
+        private const int SCREEN_FORMAT = 2;
 
         private readonly string connectionString = ConfigurationManager.ConnectionStrings["TheBookOfBusinessAccountingContext"].ConnectionString;
 
@@ -139,10 +142,10 @@ namespace DALTheBookBusinessAccounting.Repositories
 
                     SqlDataReader reader = command.ExecuteReader();
                     if (reader.HasRows) // если есть данные
-                    {
+                    {                        
                         while (reader.Read()) // построчно считываем данные
                         {
-                            items.Add(new Item
+                            var item = new Item
                             {
                                 Id = reader.GetInt32(ID),
                                 Title = reader.GetString(TITLE),
@@ -150,8 +153,11 @@ namespace DALTheBookBusinessAccounting.Repositories
                                 LocationOfItem = reader.GetString(LOCATION_OF_ITEM),
                                 About = reader.GetString(ABOUT),
                                 CategoryId = reader.GetInt32(CATEGORY_ID),
-                                StatusId = reader.GetInt32(STATUS_ID)
-                            });
+                                StatusId = reader.GetInt32(STATUS_ID),
+                                Images = GetCollectionImages(reader.GetInt32(ID))
+                            };
+
+                            items.Add(item);
                         }
                     }
                 }
@@ -186,6 +192,8 @@ namespace DALTheBookBusinessAccounting.Repositories
 
                     if (reader.HasRows)
                     {
+                        item = new Item();
+
                         while (reader.Read())
                         {
                             item.Id = reader.GetInt32(ID);
@@ -196,6 +204,8 @@ namespace DALTheBookBusinessAccounting.Repositories
                             item.CategoryId = reader.GetInt32(CATEGORY_ID);
                             item.StatusId = reader.GetInt32(STATUS_ID);
                             item.CategoryName = reader.GetString(CATEGORY_NAME);
+                            item.StatusName = reader.GetString(STATUS_NAME);
+                            item.Images = GetCollectionImages(reader.GetInt32(ID));
                         }
                     }
                 }
@@ -231,7 +241,9 @@ namespace DALTheBookBusinessAccounting.Repositories
                                 About = reader.GetString(ABOUT),
                                 CategoryId = reader.GetInt32(CATEGORY_ID),
                                 StatusId = reader.GetInt32(STATUS_ID),
-                                CategoryName = reader.GetString(CATEGORY_NAME)
+                                CategoryName = reader.GetString(CATEGORY_NAME),
+                                StatusName = reader.GetString(STATUS_NAME),
+                                Images = GetCollectionImages(reader.GetInt32(ID))
                             });
                         }
                     }
@@ -305,6 +317,47 @@ namespace DALTheBookBusinessAccounting.Repositories
                     command.ExecuteNonQuery();
                 }
             }
+        }
+
+        public ICollection<Image> GetCollectionImages(int id)
+        {
+            const string SQL_EXPRESSION = "GetListImagesOfItem";
+
+            List<Image> images = new List<Image>();
+            using (SqlConnection connection = new SqlConnection(connectionString))
+            {
+                connection.Open();
+
+                using (SqlCommand command = new SqlCommand(SQL_EXPRESSION, connection)
+                {
+                    CommandType = System.Data.CommandType.StoredProcedure// указываем, что команда представляет хранимую процедуру
+                })
+                {
+                    SqlParameter IdParam = new SqlParameter // параметр для ввода id
+                    {
+                        ParameterName = "@Id",
+                        Value = id
+                    };
+                    command.Parameters.Add(IdParam);// добавляем параметр
+
+                    SqlDataReader reader = command.ExecuteReader();
+
+                    if (reader.HasRows)
+                    {
+                        var image = new Image();
+
+                        while (reader.Read())
+                        {
+                            image.ScreenFormat = reader.GetString(SCREEN_FORMAT);
+                            image.Screen = (byte[])reader["Screen"];
+
+                            images.Add(image);
+                        }
+                    }
+                }
+            }
+
+            return images;
         }
     }
 }

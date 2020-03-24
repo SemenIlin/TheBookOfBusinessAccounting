@@ -1,0 +1,42 @@
+﻿@model TheBookBusinessAccounting.Models.Pagination.IndexViewModel
+@using TheBookBusinessAccounting.App_Code
+@{
+	ViewBag.Title = "Home Page";
+}
+
+@using (Html.BeginForm("SearchItem", "User", FormMethod.Post))
+{
+	<div class="form-group">
+		<div class="col-md-10">
+			@Html.TextBox("search")
+			<input type="submit" value="Поиск" class="btn btn-default" />
+		</div>
+	</div>
+}
+
+<div id="main">
+	<table class="table">
+		<tr>
+			<td>Предмет</td>
+		</tr>
+
+		@foreach (var item in Model.ItemViewModels)
+		{
+			<tr>
+				<td>
+					@item.Title
+					@foreach (var image in item.ImageViewModels)
+					{
+						<a href="@Url.Action("GetItem","User",new { id = item.Id })" target="_blank" >
+							@Html.Partial("Image", image)
+						</a>
+					}
+				</td>
+			</tr>
+		}
+	</table>
+	<br />
+	<div class="btn-group">
+		@Html.PageLinks(Model.PageInfo, x => Url.Action($"{Model.ActionName}", "User", new {search = Model.SearchText, page = x }))
+	</div>
+</div>

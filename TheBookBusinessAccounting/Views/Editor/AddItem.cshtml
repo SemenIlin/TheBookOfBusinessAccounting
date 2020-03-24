@@ -1,0 +1,73 @@
+﻿@model TheBookBusinessAccounting.Models.ItemViewModel
+
+@{
+    ViewBag.Title = "AddItem";
+}
+
+<h2>Добавить предмет</h2>
+
+@using (Html.BeginForm()) 
+{
+    @Html.AntiForgeryToken()
+    
+<div class="form-horizontal">
+	@Html.ValidationSummary(true, "", new { @class = "text-danger" })
+	<div class="form-group">
+		@Html.LabelFor(model => model.Title, htmlAttributes: new { @class = "control-label col-md-2" })
+		<div class="col-md-10">
+			@Html.EditorFor(model => model.Title, new { htmlAttributes = new { @class = "form-control" } })
+			@Html.ValidationMessageFor(model => model.Title, "", new { @class = "text-danger" })
+		</div>
+	</div>
+
+	<div class="form-group">
+		@Html.LabelFor(model => model.InventoryNumber, htmlAttributes: new { @class = "control-label col-md-2" })
+		<div class="col-md-10">
+			@Html.EditorFor(model => model.InventoryNumber, new { htmlAttributes = new { @class = "form-control" } })
+			@Html.ValidationMessageFor(model => model.InventoryNumber, "", new { @class = "text-danger" })
+		</div>
+	</div>
+
+	<div class="form-group">
+		@Html.LabelFor(model => model.LocationOfItem, htmlAttributes: new { @class = "control-label col-md-2" })
+		<div class="col-md-10">
+			@Html.EditorFor(model => model.LocationOfItem, new { htmlAttributes = new { @class = "form-control" } })
+			@Html.ValidationMessageFor(model => model.LocationOfItem, "", new { @class = "text-danger" })
+		</div>
+	</div>
+
+	<div class="form-group">
+		@Html.LabelFor(model => model.About, htmlAttributes: new { @class = "control-label col-md-2" })
+		<div class="col-md-10">
+			@Html.EditorFor(model => model.About, new { htmlAttributes = new { @class = "form-control" } })
+			@Html.ValidationMessageFor(model => model.About, "", new { @class = "text-danger" })
+		</div>
+	</div>
+
+	<div class="form-group">
+		@Html.LabelFor(model => model.CategoryId, htmlAttributes: new { @class = "control-label col-md-2" })
+		<div class="col-md-10">
+			@Html.DropDownListFor(model => model.CategoryId, ViewBag.Categories as IEnumerable<SelectListItem>)
+			@Html.ValidationMessageFor(model => model.CategoryId, "", new { @class = "text-danger" })
+		</div>
+	</div>
+
+	<div class="form-group">
+		@Html.LabelFor(model => model.StatusId, htmlAttributes: new { @class = "control-label col-md-2" })
+		<div class="col-md-10">
+			@Html.DropDownListFor(model => model.StatusId, ViewBag.Statuses as IEnumerable<SelectListItem>)
+			@Html.ValidationMessageFor(model => model.StatusId, "", new { @class = "text-danger" })
+		</div>
+	</div>
+
+	<div class="form-group">
+		<div class="col-md-offset-2 col-md-10">
+			<input type="submit" value="Создать" class="btn btn-default" />
+		</div>
+	</div>
+</div>
+}
+
+<div>
+    @Html.ActionLink("Назад", "Index")
+</div>

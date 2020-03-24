@@ -90,6 +90,8 @@ namespace DALTheBookBusinessAccounting.Repositories
 
                     if (reader.HasRows)
                     {
+                        category = new Category();
+
                         while (reader.Read())
                         {
                             category.Id = reader.GetInt32(ID);

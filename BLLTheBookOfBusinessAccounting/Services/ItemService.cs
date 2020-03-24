@@ -14,7 +14,7 @@ namespace BLLTheBookOfBusinessAccounting.Services
 
         public ItemService(IRepository<Item> repositoryItem)
         {
-            _repositoryItem = repositoryItem;        
+            _repositoryItem = repositoryItem;
         }
 
         public void Add(ItemDto itemDto)

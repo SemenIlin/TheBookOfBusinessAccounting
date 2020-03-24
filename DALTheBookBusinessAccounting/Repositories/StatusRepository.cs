@@ -40,6 +40,8 @@ namespace DALTheBookBusinessAccounting.Repositories
 
                     if (reader.HasRows)
                     {
+                        status = new Status();
+
                         while (reader.Read())
                         {
                             status.Id = reader.GetInt32(ID);

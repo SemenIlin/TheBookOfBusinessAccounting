@@ -77,7 +77,7 @@ USE TheBookOfBusinessAccounting;
 --CREATE TABLE Items
 --(  
 --   Id INT PRIMARY KEY IDENTITY(1,1),
---   Tite NVARCHAR(100),
+--   Title NVARCHAR(100),
 --   InventoryNumber NVARCHAR(50),
 --   LocationOfItem NVARCHAR(200),
 --   About NVARCHAR(500),
