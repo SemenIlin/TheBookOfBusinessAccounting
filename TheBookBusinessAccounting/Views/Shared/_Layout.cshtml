@@ -17,8 +17,11 @@
 					<span class="icon-bar"></span>
 					<span class="icon-bar"></span>
 				</button>
-				@Html.ActionLink("Имя приложения", "Index", "Home", new { area = "" }, new { @class = "navbar-brand" })
-			</div>			
+				@Html.ActionLink("Книга хоз учёта", "Index", "Home", new { area = "" }, new { @class = "navbar-brand" })
+			</div>
+			<div class="navbar-collapse collapse">				
+				@Html.Partial("_LoginPartial")
+			</div>
 		</div>
 	</div>
 

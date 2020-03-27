@@ -108,7 +108,7 @@ namespace DALTheBookBusinessAccounting.Repositories
         {
             const string SQL_EXPRESSION = "GetAllCategories";
 
-            List<Category> categories = new List<Category>();
+            var categories = new List<Category>();
             using (SqlConnection connection = new SqlConnection(connectionString))
             {
                 connection.Open();

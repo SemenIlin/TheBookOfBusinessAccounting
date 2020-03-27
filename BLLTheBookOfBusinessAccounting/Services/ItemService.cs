@@ -1,18 +1,17 @@
 ﻿using BLLTheBookOfBusinessAccounting.Interfaces;
 using BLLTheBookOfBusinessAccounting.Mappers;
 using BLLTheBookOfBusinessAccounting.ModelsDto;
-using DALTheBookBusinessAccounting.Entities;
 using DALTheBookBusinessAccounting.Interfaces;
 using System.Collections.Generic;
 using Common.Exceptions;
 
 namespace BLLTheBookOfBusinessAccounting.Services
 {
-    public class ItemService :  IService<ItemDto>
+    public class ItemService :  IItemService
     {
-        private readonly IRepository<Item> _repositoryItem;
+        private readonly IItemRepository _repositoryItem;
 
-        public ItemService(IRepository<Item> repositoryItem)
+        public ItemService(IItemRepository repositoryItem)
         {
             _repositoryItem = repositoryItem;
         }

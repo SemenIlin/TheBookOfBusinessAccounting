@@ -6,18 +6,18 @@ using System.Linq;
 using System.Web;
 using System.Web.Mvc;
 using TheBookBusinessAccounting.Models;
-using TheBookBusinessAccounting.Mappers;
+using TheBookBusinessAccounting.Extensions;
 
 namespace TheBookBusinessAccounting.Controllers
 {
     public class ImageController : Controller
     {
         private readonly IReadAndEditService<ImageDto> _imageService;
-        private readonly IService<ItemDto> _itemService;
+        private readonly IItemService _itemService;
 
         public ImageController(
             IReadAndEditService<ImageDto> imageService,
-            IService<ItemDto> itemService
+            IItemService itemService
             )
         {
             _imageService = imageService;

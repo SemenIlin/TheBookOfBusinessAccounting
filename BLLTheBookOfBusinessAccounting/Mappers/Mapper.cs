@@ -108,6 +108,78 @@ namespace BLLTheBookOfBusinessAccounting.Mappers
             return images.Select(image => image.MapToDtoModel());
         }
 
+        public static UserDto MapToDtoModel(this User user)
+        {
+            return new UserDto()
+            {
+                Id = user.Id,
+                UserLogin = user.UserLogin,
+                UserPassword = user.UserPassword,
+                Email = user.Email
+            };
+        }
+
+        public static User MapToDbModel(this UserDto userDto)
+        {
+            return new User()
+            { 
+                Id = userDto.Id,
+                UserLogin = userDto.UserLogin,
+                UserPassword = userDto.UserPassword,
+                Email = userDto.Email,
+                UsersRoles = userDto.RoleDtos.MapToCollectionDbModels(userDto.Id)
+            };
+        }
+
+        public static IEnumerable<UserDto> MapToListDtoModels(this IEnumerable<User> users)
+        {
+            return users.Select(user => user.MapToDtoModel());
+        }
+
+        public static RoleDto MapToDtoModel(this Role role)
+        {
+            return new RoleDto()
+            { 
+                Id = role.Id,
+                RoleName = role.RoleName
+            };
+        }
+
+        public static IEnumerable<RoleDto> MapToListDtoModels(this IEnumerable<Role> roles)
+        {
+            return roles.Select(role => role.MapToDtoModel());
+        }
+
+        public static ICollection<RoleDto> MapToCollectionDtoModels(this ICollection<Role> roles)
+        {
+            var collectionRoles = new List<RoleDto>();
+            foreach (var role in roles)
+            {
+                collectionRoles.Add(new RoleDto()
+                {
+                    Id = role.Id,
+                    RoleName = role.RoleName
+                });
+            }
+
+            return collectionRoles;
+        }
+
+        private static ICollection<UsersRole> MapToCollectionDbModels(this ICollection<RoleDto> roleDtos, int userId)
+        {
+            var collectionRoles = new List<UsersRole>();
+            foreach(var role in roleDtos)
+            {
+                collectionRoles.Add(new UsersRole()
+                {
+                    RoleId = role.Id,
+                    UserId = userId                    
+                });
+            }
+
+            return collectionRoles;
+        }
+
         private static ICollection<ImageDto> MapToCollectionDtoModels(this ICollection<Image> images)
         {
             var collectionByImage = new List<ImageDto>();

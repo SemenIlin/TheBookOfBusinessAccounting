@@ -6,7 +6,7 @@ using System.Data.SqlClient;
 
 namespace DALTheBookBusinessAccounting.Repositories
 {
-    public class ItemRepository : IRepository<Item>
+    public class ItemRepository : IItemRepository
     {
         private const int ID = 0;
         private const int TITLE = 1;
@@ -110,7 +110,7 @@ namespace DALTheBookBusinessAccounting.Repositories
         {
             const string SQL_EXPRESSION = "FindItem";
 
-            List<Item> items = new List<Item>();
+            var items = new List<Item>();
             using (SqlConnection connection = new SqlConnection(connectionString))
             {
                 connection.Open();
@@ -218,7 +218,7 @@ namespace DALTheBookBusinessAccounting.Repositories
         {
             const string SQL_EXPRESSION = "GetAllItems";
 
-            List<Item> items = new List<Item>();
+            var items = new List<Item>();
             using (SqlConnection connection = new SqlConnection(connectionString))
             {
                 connection.Open();
@@ -255,7 +255,7 @@ namespace DALTheBookBusinessAccounting.Repositories
 
         public void Update(Item item)
         {
-            const string SQL_EXPRESSION = "AddItem";
+            const string SQL_EXPRESSION = "UpdateItem";
 
             using (SqlConnection connection = new SqlConnection(connectionString))
             {
@@ -323,7 +323,7 @@ namespace DALTheBookBusinessAccounting.Repositories
         {
             const string SQL_EXPRESSION = "GetListImagesOfItem";
 
-            List<Image> images = new List<Image>();
+            var images = new List<Image>();
             using (SqlConnection connection = new SqlConnection(connectionString))
             {
                 connection.Open();

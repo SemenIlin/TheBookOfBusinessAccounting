@@ -1,26 +1,24 @@
 ﻿using BLLTheBookOfBusinessAccounting.Interfaces;
 using BLLTheBookOfBusinessAccounting.ModelsDto;
-using System;
-using System.Collections.Generic;
 using System.Linq;
-using System.Web;
 using System.Web.Mvc;
+using TheBookBusinessAccounting.Extensions;
 using TheBookBusinessAccounting.Infrastructure;
-using TheBookBusinessAccounting.Mappers;
 using TheBookBusinessAccounting.Models;
 using TheBookBusinessAccounting.Models.Pagination;
 
 namespace TheBookBusinessAccounting.Controllers
 {
+    [MyAuthorizeAttribute(new string[]{"User", "Editor", "Administrator"})]
     public class UserController : Controller
     {
-        private readonly IService<ItemDto> _itemService;
+        private readonly IItemService _itemService;
         private readonly IReadService<StatusDto> _statusService;
         private readonly IReadAndEditService<CategoryDto> _categoryService;
         private readonly IReadAndEditService<ImageDto> _imageService;
 
         public UserController(
-            IService<ItemDto> itemService,
+            IItemService itemService,
             IReadService<StatusDto> statusService,
             IReadAndEditService<CategoryDto> categoryService,
             IReadAndEditService<ImageDto> imageService
@@ -33,13 +31,13 @@ namespace TheBookBusinessAccounting.Controllers
         }
 
         [HttpGet]
-        public ActionResult Index(string search, int page = 1)
+        public ActionResult Index(string category, int page = 1)
         {
             const int pageSize = 10; // количество объектов на страницу
             var allItems = _itemService.GetAll();
             var itemPerPages = allItems.
-                Where(p => search == null ||
-                      p.Category == search).
+                Where(p => category == null ||
+                      p.Category == category).
                 OrderBy(item => item.Title).
                 Skip((page - 1) * pageSize).Take(pageSize);
 
@@ -47,9 +45,9 @@ namespace TheBookBusinessAccounting.Controllers
             {
                 PageNumber = page,
                 PageSize = pageSize,
-                TotalItems = search == null ?
+                TotalItems = category == null ?
                    allItems.Count() :
-                   allItems.Where(p => p.Category.ToLower().Contains(search.ToLower())).Count()
+                   allItems.Where(p => p.Category.ToLower().Contains(category.ToLower())).Count()
             };
 
             IndexViewModel ivm = new IndexViewModel

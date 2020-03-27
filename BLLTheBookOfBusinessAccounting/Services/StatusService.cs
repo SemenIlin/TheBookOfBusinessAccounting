@@ -3,23 +3,22 @@ using BLLTheBookOfBusinessAccounting.Interfaces;
 using BLLTheBookOfBusinessAccounting.Mappers;
 using BLLTheBookOfBusinessAccounting.ModelsDto;
 using Common.Exceptions;
-using DALTheBookBusinessAccounting.Entities;
 using DALTheBookBusinessAccounting.Interfaces;
 
 namespace BLLTheBookOfBusinessAccounting.Services
 {
     public class StatusService : IReadService<StatusDto>
     {
-        private readonly IReadRepository<Status> _readRepository;
+        private readonly IStatusRepository _statusRepository;
 
-        public StatusService(IReadRepository<Status> readRepository)
+        public StatusService(IStatusRepository statusRepository)
         {
-            _readRepository = readRepository;
+            _statusRepository = statusRepository;
         }
 
         public StatusDto Get(int id)
         {
-            var status = _readRepository.Get(id);
+            var status = _statusRepository.Get(id);
             if(status == null)
             {
                 throw new NotFoundException("Статус не найден.", "");
@@ -30,7 +29,7 @@ namespace BLLTheBookOfBusinessAccounting.Services
 
         public IEnumerable<StatusDto> GetAll()
         {
-            return _readRepository.GetAll().MapToListDtoModels();
+            return _statusRepository.GetAll().MapToListDtoModels();
         }
     }
 }

@@ -1,25 +1,23 @@
 ﻿using BLLTheBookOfBusinessAccounting.Interfaces;
 using BLLTheBookOfBusinessAccounting.ModelsDto;
-using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Web;
 using System.Web.Mvc;
 using TheBookBusinessAccounting.Infrastructure;
-using TheBookBusinessAccounting.Mappers;
+using TheBookBusinessAccounting.Extensions;
 using TheBookBusinessAccounting.Models;
 
 namespace TheBookBusinessAccounting.Controllers
 {
+    [MyAuthorizeAttribute(new string[] { "Editor", "Administrator" })]
     public class EditorController : Controller
     {
-        private readonly IService<ItemDto> _itemService;
+        private readonly IItemService _itemService;
         private readonly IReadService<StatusDto> _statusService;
         private readonly IReadAndEditService<CategoryDto> _categoryService;
         private readonly IReadAndEditService<ImageDto> _imageService;
 
         public EditorController(
-            IService<ItemDto> itemService,
+            IItemService itemService,
             IReadService<StatusDto> statusService,
             IReadAndEditService<CategoryDto> categoryService,
             IReadAndEditService<ImageDto> imageService)
@@ -54,7 +52,6 @@ namespace TheBookBusinessAccounting.Controllers
 
             return View(itemViewModel);
         }
-
 
         [HttpGet]
         public ActionResult EditItem(int? id)
@@ -100,7 +97,6 @@ namespace TheBookBusinessAccounting.Controllers
             SelectListCategories();
 
             return View(itemViewModel);
-
         }
 
         [HttpGet]
@@ -127,8 +123,18 @@ namespace TheBookBusinessAccounting.Controllers
             return RedirectToAction("Index");
         }
 
+        [HttpPost]
+        public ActionResult DeleteImage(int? id)
+        {
+            var imageAndAction = GetActionResultAndImage(id);
+            if(imageAndAction.ImageModel == null)
+            {
+                return imageAndAction.ActionResult;
+            }
 
-
+            _imageService.Delete(id.Value);
+            return RedirectToAction("Index");
+        }
 
         [NonAction]
         private SelectList SelectListStatuses()
@@ -164,5 +170,21 @@ namespace TheBookBusinessAccounting.Controllers
             return (null, item.MapToViewModel());
         }
 
+        [NonAction]
+        private (ActionResult ActionResult, ImageViewModel ImageModel) GetActionResultAndImage(int? id)
+        {
+            if (id == null)
+            {
+                return (HttpNotFound(), null);
+            }
+
+            var item = _imageService.Get(id.Value);
+            if (item == null)
+            {
+                return (HttpNotFound(), null);
+            }
+
+            return (null, item.MapToViewModel());
+        }
     }
 }

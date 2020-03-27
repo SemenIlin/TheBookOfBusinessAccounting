@@ -16,7 +16,7 @@ namespace TheBookBusinessAccounting
             routes.MapRoute(
                 name: "Default",
                 url: "{controller}/{action}/{id}",
-                defaults: new { controller = "Item", action = "AddItem", id = UrlParameter.Optional }
+                defaults: new { controller = "User", action = "Index", id = UrlParameter.Optional }
             );
         }
     }

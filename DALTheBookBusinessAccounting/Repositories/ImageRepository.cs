@@ -122,7 +122,7 @@ namespace DALTheBookBusinessAccounting.Repositories
         {
             const string SQL_EXPRESSION = "GetAllImages";
 
-            List<Image> images = new List<Image>();
+            var images = new List<Image>();
             using (SqlConnection connection = new SqlConnection(connectionString))
             {
                 connection.Open();

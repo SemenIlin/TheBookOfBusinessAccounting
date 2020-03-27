@@ -6,7 +6,7 @@ using System.Data.SqlClient;
 
 namespace DALTheBookBusinessAccounting.Repositories
 {
-    public class StatusRepository : IReadRepository<Status>
+    public class StatusRepository : IStatusRepository
     {
         private const int ID = 0;
         private const int TITLE = 1;
@@ -58,7 +58,7 @@ namespace DALTheBookBusinessAccounting.Repositories
         {
             const string SQL_EXPRESSION = "GetAllStatuses";
 
-            List<Status> statuses = new List<Status>();
+            var statuses = new List<Status>();
             using(SqlConnection connection = new SqlConnection(connectionString))
             {
                 connection.Open();

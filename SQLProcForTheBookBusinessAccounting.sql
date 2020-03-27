@@ -110,7 +110,7 @@ USE TheBookOfBusinessAccounting;
 --WHERE Id = @Id
 --END
 
-GO
+--GO
 --CREATE PROC GetItem
 --@Id INT
 --AS BEGIN
@@ -211,3 +211,89 @@ GO
 --	      (@CategoryId = 0 OR CategoryId = @CategoryId) AND
 --		   Tite LIKE @Name+'%'
 --END
+--GO
+--CREATE PROC AddUser
+--@UserLogin NVARCHAR(50),
+--@UserPassword NVARCHAR(50),
+--@Email NVARCHAR(50)
+--AS BEGIN
+--INSERT INTO Users(UserLogin, UserPassword, Email)
+--VALUES (@UserLogin, @UserPassword, @Email)
+--END
+
+--GO
+--CREATE PROC DelUser
+--@Id INT
+--AS BEGIN
+--DELETE Users
+--WHERE Id = @Id
+--END
+
+--GO
+--CREATE PROC GetUser
+--@Id INT
+--AS BEGIN
+--   SELECT * FROM Users
+--   WHERE Id = @Id
+--END
+
+--GO 
+--CREATE PROC GetAllUsers
+--AS BEGIN
+--SELECT * FROM Users
+--END
+
+--GO 
+--CREATE PROC UpdateUser
+--@Id INT,
+--@UserPassword NVARCHAR(50),
+--@Email NVARCHAR(100)
+--AS BEGIN 
+--UPDATE Users
+--SET
+--UserPassword = @UserPassword,
+--Email = @Email
+--WHERE Id = @Id
+--END
+
+--GO
+--CREATE PROC GetListRolesOfUser
+--@Id INT
+--AS BEGIN
+--   SELECT RoleId FROM UsersRoles
+--   WHERE UserId = @Id
+--END
+
+--GO 
+--CREATE PROC GetRole
+--@Id INT
+--AS BEGIN
+--   SELECT * FROM Roles
+--   WHERE Id = @Id
+--END
+
+--GO
+--CREATE PROC GetListRoles
+--AS BEGIN
+--   SELECT * FROM Roles
+--END
+
+--GO 
+--CREATE PROC FindUserIsLogin
+--@UserLogin NVARCHAR(50),
+--@UserPassword NVARCHAR(50)
+--AS BEGIN
+--   SELECT * FROM Users
+--   WHERE UserLogin = @UserLogin AND UserPassword = @UserPassword
+--END
+
+--GO
+--CREATE PROC GetRoles
+--@UserLogin NVARCHAR(50)
+--AS BEGIN
+--   SELECT Roles.Id, RoleName FROM Roles
+--   INNER JOIN UsersRoles ON UsersRoles.RoleId = Roles.Id
+--   INNER JOIN Users ON Users.Id = UsersRoles.UserId
+--   WHERE Users.UserLogin = @UserLogin
+--END
+

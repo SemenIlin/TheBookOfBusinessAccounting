@@ -14,13 +14,17 @@ namespace TheBookBusinessAccounting.Infrastructure
         {
             Bind<IReadAndEditRepository<Category>>().To<CategoryRepository>();
             Bind<IReadAndEditRepository<Image>>().To<ImageRepository>();
-            Bind<IReadRepository<Status>>().To<StatusRepository>();
-            Bind<IRepository<Item>>().To<ItemRepository>();
+            Bind<IStatusRepository>().To<StatusRepository>();
+            Bind<IItemRepository>().To<ItemRepository>();
+            Bind<IUserRepository>().To<UserRepository>();
+            Bind<IRoleRepository>().To<RoleRepository>();
 
             Bind<IReadAndEditService<CategoryDto>>().To<CategoryService>();
             Bind<IReadAndEditService<ImageDto>>().To<ImageService>();
             Bind<IReadService<StatusDto>>().To<StatusService>();
-            Bind<IService<ItemDto>>().To<ItemService>();
+            Bind<IItemService>().To<ItemService>();
+            Bind<IUserService>().To<UserService>();
+            Bind<IRoleService>().To<RoleService>();
         }
     }
 }
