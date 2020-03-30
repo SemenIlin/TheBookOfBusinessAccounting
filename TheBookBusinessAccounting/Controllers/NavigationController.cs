@@ -6,7 +6,7 @@ using TheBookBusinessAccounting.Infrastructure;
 
 namespace TheBookBusinessAccounting.Controllers
 {
-    [MyAuthorizeAttribute(new string[] { "User", "Editor", "Administrator" })]
+    //[Authorize(Roles ="User, Editor, Administrator" )]
     public class NavigationController: Controller
     {
         private readonly IReadAndEditService<CategoryDto> _categoryReadAndEditService;

@@ -209,16 +209,17 @@ USE TheBookOfBusinessAccounting;
 --	SELECT * FROM Items
 --	WHERE (@StatusId = 0 OR StatusId = @StatusId) AND 
 --	      (@CategoryId = 0 OR CategoryId = @CategoryId) AND
---		   Tite LIKE @Name+'%'
+--		   Title LIKE @Name+'%'
 --END
 --GO
 --CREATE PROC AddUser
 --@UserLogin NVARCHAR(50),
+--@UserName  NVARCHAR(50),
 --@UserPassword NVARCHAR(50),
 --@Email NVARCHAR(50)
 --AS BEGIN
---INSERT INTO Users(UserLogin, UserPassword, Email)
---VALUES (@UserLogin, @UserPassword, @Email)
+--INSERT INTO Users(UserLogin, UserPassword, Email, UserName)
+--VALUES (@UserLogin, @UserPassword, @Email, @UserName)
 --END
 
 --GO
@@ -246,13 +247,13 @@ USE TheBookOfBusinessAccounting;
 --GO 
 --CREATE PROC UpdateUser
 --@Id INT,
---@UserPassword NVARCHAR(50),
---@Email NVARCHAR(100)
+--@UserName NVARCHAR(50),
+--@UserPassword NVARCHAR(50)
 --AS BEGIN 
 --UPDATE Users
 --SET
 --UserPassword = @UserPassword,
---Email = @Email
+--UserName = @UserName
 --WHERE Id = @Id
 --END
 
@@ -285,6 +286,14 @@ USE TheBookOfBusinessAccounting;
 --AS BEGIN
 --   SELECT * FROM Users
 --   WHERE UserLogin = @UserLogin AND UserPassword = @UserPassword
+--END
+
+--GO 
+--CREATE PROC FindUser
+--@UserLogin NVARCHAR(50)
+--AS BEGIN
+--   SELECT * FROM Users
+--   WHERE UserLogin = @UserLogin 
 --END
 
 --GO

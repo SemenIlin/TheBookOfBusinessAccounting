@@ -21,7 +21,7 @@ namespace TheBookBusinessAccounting.Infrastructure
 
             Bind<IReadAndEditService<CategoryDto>>().To<CategoryService>();
             Bind<IReadAndEditService<ImageDto>>().To<ImageService>();
-            Bind<IReadService<StatusDto>>().To<StatusService>();
+            Bind<IStatusService>().To<StatusService>();
             Bind<IItemService>().To<ItemService>();
             Bind<IUserService>().To<UserService>();
             Bind<IRoleService>().To<RoleService>();

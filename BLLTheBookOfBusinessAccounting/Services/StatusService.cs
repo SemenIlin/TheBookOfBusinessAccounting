@@ -7,7 +7,7 @@ using DALTheBookBusinessAccounting.Interfaces;
 
 namespace BLLTheBookOfBusinessAccounting.Services
 {
-    public class StatusService : IReadService<StatusDto>
+    public class StatusService : IStatusService
     {
         private readonly IStatusRepository _statusRepository;
 

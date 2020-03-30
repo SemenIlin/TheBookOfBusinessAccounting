@@ -37,6 +37,14 @@ namespace BLLTheBookOfBusinessAccounting.Services
             return userDto;
         }
 
+        public UserDto Find(string login)
+        {
+            var userDto = _userRepository.FindUser(login).MapToDtoModel();
+            userDto.RoleDtos = _roleRepository.GetAllRolesOfUser(userDto.UserLogin).MapToCollectionDtoModels();
+
+            return userDto;
+        }
+
         public UserDto Get(int id)
         {
             var user = _userRepository.Get(id);

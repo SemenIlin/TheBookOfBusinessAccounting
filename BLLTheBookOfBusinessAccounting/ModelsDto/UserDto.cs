@@ -8,6 +8,7 @@ namespace BLLTheBookOfBusinessAccounting.ModelsDto
 
         public string UserLogin { get; set; }
         public string UserPassword { get; set; }
+        public string UserName { get; set; }
         public string Email { get; set; }
 
         public ICollection<RoleDto> RoleDtos { get; set; }

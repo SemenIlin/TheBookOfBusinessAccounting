@@ -5,6 +5,7 @@ namespace DALTheBookBusinessAccounting.Interfaces
 {
     public interface IItemRepository
     {
+        ICollection<Image> GetCollectionImages(int id);
         IEnumerable<Item> GetAll();
         Item Get(int id);
 

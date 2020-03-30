@@ -18,14 +18,12 @@ namespace TheBookBusinessAccounting.Controllers
         }
 
         [HttpGet]
-        [AllowAnonymous]
         public ActionResult Login()
         {
             return View();
         }
 
         [HttpPost]
-        [AllowAnonymous]
         [ValidateAntiForgeryToken]
         public ActionResult Login(LoginModel loginModel)
         {
@@ -49,14 +47,12 @@ namespace TheBookBusinessAccounting.Controllers
         }
 
         [HttpGet]
-        [AllowAnonymous]
         public ActionResult Registration()
         {
             return View();
         }
 
         [HttpPost]
-        [AllowAnonymous]
         [ValidateAntiForgeryToken]
         public ActionResult Registration(RegisterModel registerModel)
         {

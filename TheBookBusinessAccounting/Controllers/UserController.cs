@@ -3,27 +3,32 @@ using BLLTheBookOfBusinessAccounting.ModelsDto;
 using System.Linq;
 using System.Web.Mvc;
 using TheBookBusinessAccounting.Extensions;
-using TheBookBusinessAccounting.Infrastructure;
 using TheBookBusinessAccounting.Models;
 using TheBookBusinessAccounting.Models.Pagination;
 
 namespace TheBookBusinessAccounting.Controllers
 {
-    [MyAuthorizeAttribute(new string[]{"User", "Editor", "Administrator"})]
+    //[Authorize(Roles = "User, Editor, Administrator")]
     public class UserController : Controller
     {
+        private readonly IRoleService _roleService;
+        private readonly IUserService _userService;
         private readonly IItemService _itemService;
-        private readonly IReadService<StatusDto> _statusService;
+        private readonly IStatusService _statusService;
         private readonly IReadAndEditService<CategoryDto> _categoryService;
         private readonly IReadAndEditService<ImageDto> _imageService;
 
         public UserController(
+            IRoleService roleService,
+            IUserService userService,
             IItemService itemService,
-            IReadService<StatusDto> statusService,
+            IStatusService statusService,
             IReadAndEditService<CategoryDto> categoryService,
             IReadAndEditService<ImageDto> imageService
             )
         {
+            _roleService = roleService;
+            _userService = userService;
             _itemService = itemService;
             _categoryService = categoryService;
             _statusService = statusService;
@@ -33,7 +38,7 @@ namespace TheBookBusinessAccounting.Controllers
         [HttpGet]
         public ActionResult Index(string category, int page = 1)
         {
-            const int pageSize = 10; // количество объектов на страницу
+            const int pageSize = 10; 
             var allItems = _itemService.GetAll();
             var itemPerPages = allItems.
                 Where(p => category == null ||
@@ -80,50 +85,53 @@ namespace TheBookBusinessAccounting.Controllers
         [HttpGet]
         public ActionResult GetItem(int? id)
         {
-            var itemAndAction = GetActionResultAndItem(id);
-
-            return itemAndAction.ActionResult ?? View(itemAndAction.ItemModel);
-
-        }
-
-        [NonAction]
-        private SelectList SelectListStatuses()
-        {
-            var statuses = new SelectList(_statusService.GetAll(), "Id", "Title");
-            ViewBag.Statuses = statuses;
-            return ViewBag.Statuses;
-        }
-
-        [NonAction]
-        private SelectList SelectListCategories()
-        {
-            var categories = new SelectList(_categoryService.GetAll(), "Id", "Title");
-            ViewBag.Categories = categories;
-
-            return ViewBag.Categories;
-        }
-
-        [NonAction]
-        private (ActionResult ActionResult, ItemViewModel ItemModel) GetActionResultAndItem(int? id)
-        {
             if (id == null)
             {
-                return (HttpNotFound(), null);
+                return HttpNotFound();
             }
 
             var item = _itemService.Get(id.Value);
             if (item == null)
             {
-                return (HttpNotFound(), null);
+                return HttpNotFound();
             }
 
-            return (null, item.MapToViewModel());
+            return View(item.MapToViewModel());
+        }
+
+        [HttpGet]
+        public ActionResult EditUser()
+        {
+            var userViewModel = _userService.Find(User.Identity.Name).MapToViewModel();
+
+            if(userViewModel == null)
+            {
+                return HttpNotFound();
+            }
+
+            return View(userViewModel);
+        }
+
+        [HttpPost]
+        public ActionResult EditUser(UserViewModel userViewModel)
+        {
+            var roles = _roleService.GetAllRolesOfUser(userViewModel.UserLogin);
+            userViewModel.Roles = roles.MapToCollectionViewModels();
+
+            if(ModelState.IsValid)
+            {
+                _userService.Update(userViewModel.MapToDtoModel());
+
+                return RedirectToAction("Index");
+            }            
+
+            return View(userViewModel);
         }
 
         [NonAction]
         private IndexViewModel GetSearchItems(string search, int page = 1)
         {
-            const int pageSize = 10; // количество объектов на страницу
+            const int pageSize = 10; 
             var allItems = _itemService.GetAll();
             var itemPerPages = allItems.
                 Where(p => search == null ||

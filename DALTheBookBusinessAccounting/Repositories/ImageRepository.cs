@@ -1,4 +1,5 @@
-﻿using DALTheBookBusinessAccounting.Entities;
+﻿using DALTheBookBusinessAccounting.BuilderForProc;
+using DALTheBookBusinessAccounting.Entities;
 using DALTheBookBusinessAccounting.Interfaces;
 using System.Collections.Generic;
 using System.Configuration;
@@ -13,6 +14,12 @@ namespace DALTheBookBusinessAccounting.Repositories
         private const int ITEM_ID = 3;
 
         private readonly string connectionString = ConfigurationManager.ConnectionStrings["TheBookOfBusinessAccountingContext"].ConnectionString;
+        private readonly ProcForImage _procForImage;
+
+        public ImageRepository()
+        {
+            _procForImage = new ProcForImage();
+        }
 
         public void Create(Image image)
         {
@@ -23,29 +30,12 @@ namespace DALTheBookBusinessAccounting.Repositories
                 connection.Open();
                 using (SqlCommand command = new SqlCommand(SQL_EXPRESSION, connection)
                 {
-                    CommandType = System.Data.CommandType.StoredProcedure// указываем, что команда представляет хранимую процедуру
+                    CommandType = System.Data.CommandType.StoredProcedure
                 })
                 {
-                    SqlParameter screenParam = new SqlParameter
-                    {
-                        ParameterName = "@Screen",
-                        Value = image.Screen
-                    };
-                    command.Parameters.Add(screenParam);  // добавляем параметр
-
-                    SqlParameter screenFormatParam = new SqlParameter
-                    {
-                        ParameterName = "@ScreenFormat",
-                        Value = image.ScreenFormat
-                    };
-                    command.Parameters.Add(screenFormatParam);
-
-                    SqlParameter itemIdParam = new SqlParameter
-                    {
-                        ParameterName = "@ItemId",
-                        Value = image.ItemId
-                    };
-                    command.Parameters.Add(itemIdParam);
+                    _procForImage.AddScreen(command, image);
+                    _procForImage.AddScreenFormat(command, image);
+                    _procForImage.AddItemId(command, image);
 
                     command.ExecuteNonQuery();
                 }
@@ -61,16 +51,10 @@ namespace DALTheBookBusinessAccounting.Repositories
                 connection.Open();
                 using (SqlCommand command = new SqlCommand(SQL_EXPRESSION, connection)
                 {
-                    CommandType = System.Data.CommandType.StoredProcedure// указываем, что команда представляет хранимую процедуру
+                    CommandType = System.Data.CommandType.StoredProcedure
                 })
                 {
-                    SqlParameter idParam = new SqlParameter
-                    {
-                        ParameterName = "@Id",
-                        Value = id
-                    };
-
-                    command.Parameters.Add(idParam);  // добавляем параметр
+                    _procForImage.AddImageId(command, id);
 
                     command.ExecuteNonQuery();
                 }
@@ -89,15 +73,10 @@ namespace DALTheBookBusinessAccounting.Repositories
 
                 using (SqlCommand command = new SqlCommand(SQL_EXPRESSION, connection)
                 {
-                    CommandType = System.Data.CommandType.StoredProcedure// указываем, что команда представляет хранимую процедуру
+                    CommandType = System.Data.CommandType.StoredProcedure
                 })
                 {
-                    SqlParameter IdParam = new SqlParameter // параметр для ввода id
-                    {
-                        ParameterName = "@Id",
-                        Value = id
-                    };
-                    command.Parameters.Add(IdParam);// добавляем параметр
+                    _procForImage.AddImageId(command, id);
 
                     SqlDataReader reader = command.ExecuteReader();
 
@@ -128,11 +107,11 @@ namespace DALTheBookBusinessAccounting.Repositories
                 connection.Open();
                 using (SqlCommand command = new SqlCommand(SQL_EXPRESSION, connection)
                 {
-                    CommandType = System.Data.CommandType.StoredProcedure// указываем, что команда представляет хранимую процедуру
+                    CommandType = System.Data.CommandType.StoredProcedure
                 })
                 {
                     SqlDataReader reader = command.ExecuteReader();
-                    if (reader.HasRows) // если есть данные
+                    if (reader.HasRows) 
                     {
                         while (reader.Read()) // построчно считываем данные
                         {
@@ -163,33 +142,10 @@ namespace DALTheBookBusinessAccounting.Repositories
                     CommandType = System.Data.CommandType.StoredProcedure// указываем, что команда представляет хранимую процедуру
                 })
                 {
-                    SqlParameter idParam = new SqlParameter
-                    {
-                        ParameterName = "@Id",
-                        Value = image.Id
-                    };
-                    command.Parameters.Add(idParam);
-
-                    SqlParameter screenParam = new SqlParameter
-                    {
-                        ParameterName = "@Screen",
-                        Value = image.Screen
-                    };
-                    command.Parameters.Add(screenParam);  // добавляем параметр
-
-                    SqlParameter screenFormatParam = new SqlParameter
-                    {
-                        ParameterName = "@ScreenFormat",
-                        Value = image.ScreenFormat
-                    };
-                    command.Parameters.Add(screenFormatParam);
-
-                    SqlParameter itemIdParam = new SqlParameter
-                    {
-                        ParameterName = "@ItemId",
-                        Value = image.ItemId
-                    };
-                    command.Parameters.Add(itemIdParam);
+                    _procForImage.AddImageId(command, image);
+                    _procForImage.AddScreen(command, image);
+                    _procForImage.AddScreenFormat(command, image);
+                    _procForImage.AddItemId(command, image);
 
                     command.ExecuteNonQuery();
                 }

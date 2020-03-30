@@ -6,9 +6,9 @@
 }
 
 .odd {
-	background-color: #C9E4F6; /* фон нечетных строк */
+	background-color: #E6E1E6; 
 }
 
 .even {
-	background-color: #B4DAF2; /* фон четных строк */
+	background-color: #CBCBCB;
 }

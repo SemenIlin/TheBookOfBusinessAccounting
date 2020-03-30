@@ -1,4 +1,5 @@
-﻿using DALTheBookBusinessAccounting.Entities;
+﻿using DALTheBookBusinessAccounting.BuilderForProc;
+using DALTheBookBusinessAccounting.Entities;
 using DALTheBookBusinessAccounting.Interfaces;
 using System.Collections.Generic;
 using System.Configuration;
@@ -12,6 +13,12 @@ namespace DALTheBookBusinessAccounting.Repositories
         private const int TITLE = 1;
 
         private readonly string connectionString = ConfigurationManager.ConnectionStrings["TheBookOfBusinessAccountingContext"].ConnectionString;
+        private readonly ProcForCategory _procForCategory;
+
+        public CategoryRepository()
+        {
+            _procForCategory = new ProcForCategory();
+        }
 
         public void Create(Category category)
         {
@@ -22,16 +29,10 @@ namespace DALTheBookBusinessAccounting.Repositories
                 connection.Open();
                 using (SqlCommand command = new SqlCommand(SQL_EXPRESSION, connection)
                 {
-                    CommandType = System.Data.CommandType.StoredProcedure// указываем, что команда представляет хранимую процедуру
+                    CommandType = System.Data.CommandType.StoredProcedure
                 })
                 {
-                    SqlParameter nameParam = new SqlParameter// параметр для ввода категории
-                    {
-                        ParameterName = "@Title",
-                        Value = category.Title
-                    };
-
-                    command.Parameters.Add(nameParam);  // добавляем параметр
+                    _procForCategory.AddTitle(command, category);
 
                     command.ExecuteNonQuery();
                 }
@@ -47,16 +48,10 @@ namespace DALTheBookBusinessAccounting.Repositories
                 connection.Open();
                 using (SqlCommand command = new SqlCommand(SQL_EXPRESSION, connection)
                 {
-                    CommandType = System.Data.CommandType.StoredProcedure// указываем, что команда представляет хранимую процедуру
+                    CommandType = System.Data.CommandType.StoredProcedure
                 })
                 {
-                    SqlParameter idParam = new SqlParameter// параметр для ввода категории
-                    {
-                        ParameterName = "@Id",
-                        Value = id
-                    };
-
-                    command.Parameters.Add(idParam);  // добавляем параметр
+                    _procForCategory.AddCategoryId(command, id);                    
 
                     command.ExecuteNonQuery();
                 }
@@ -75,16 +70,10 @@ namespace DALTheBookBusinessAccounting.Repositories
 
                 using (SqlCommand command = new SqlCommand(SQL_EXPRESSION, connection)
                 {
-                    CommandType = System.Data.CommandType.StoredProcedure// указываем, что команда представляет хранимую процедуру
+                    CommandType = System.Data.CommandType.StoredProcedure
                 })
                 {
-                    SqlParameter IdParam = new SqlParameter // параметр для ввода id
-                    {
-                        ParameterName = "@Id",
-                        Value = id
-                    };
-
-                    command.Parameters.Add(IdParam);// добавляем параметр
+                    _procForCategory.AddCategoryId(command, id);
 
                     SqlDataReader reader = command.ExecuteReader();
 
@@ -114,13 +103,13 @@ namespace DALTheBookBusinessAccounting.Repositories
                 connection.Open();
                 using (SqlCommand command = new SqlCommand(SQL_EXPRESSION, connection)
                 {
-                    CommandType = System.Data.CommandType.StoredProcedure// указываем, что команда представляет хранимую процедуру
+                    CommandType = System.Data.CommandType.StoredProcedure
                 })
                 {
                     SqlDataReader reader = command.ExecuteReader();
-                    if (reader.HasRows) // если есть данные
+                    if (reader.HasRows) 
                     {
-                        while (reader.Read()) // построчно считываем данные
+                        while (reader.Read()) 
                         {
                             categories.Add(new Category
                             {
@@ -144,24 +133,12 @@ namespace DALTheBookBusinessAccounting.Repositories
                 connection.Open();
                 using (SqlCommand command = new SqlCommand(SQL_EXPRESSION, connection)
                 {
-                    CommandType = System.Data.CommandType.StoredProcedure// указываем, что команда представляет хранимую процедуру
+                    CommandType = System.Data.CommandType.StoredProcedure
                 })
                 {
-                    SqlParameter IdParam = new SqlParameter 
-                    {
-                        ParameterName = "@Id",
-                        Value = category.Id
-                    };
-                    command.Parameters.Add(IdParam);// добавляем параметр
-
-                    SqlParameter titleParam = new SqlParameter // параметр для ввода Title
-                    {
-                        ParameterName = "@Title",
-                        Value = category.Title
-                    };
-
-                    command.Parameters.Add(titleParam);// добавляем параметр
-
+                    _procForCategory.AddCategoryId(command, category);
+                    _procForCategory.AddTitle(command, category);
+                    
                     command.ExecuteNonQuery();
                 }
             }

@@ -6,6 +6,7 @@ namespace BLLTheBookOfBusinessAccounting.Interfaces
     public interface IUserService
     {
         UserDto Find(string login, string password);
+        UserDto Find(string login);
 
         UserDto Get(int id);
         IEnumerable<UserDto> GetAll();

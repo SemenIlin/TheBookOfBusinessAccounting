@@ -11,6 +11,7 @@ namespace DALTheBookBusinessAccounting.Interfaces
         User Get(int id);
 
         User FindUserIsLogin(string login, string password);
+        User FindUser(string login);
 
         void Create(User item);
         void Update(User item);

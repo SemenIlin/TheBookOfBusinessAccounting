@@ -1,4 +1,5 @@
-﻿using DALTheBookBusinessAccounting.Entities;
+﻿using DALTheBookBusinessAccounting.BuilderForProc;
+using DALTheBookBusinessAccounting.Entities;
 using DALTheBookBusinessAccounting.Interfaces;
 using System.Collections.Generic;
 using System.Configuration;
@@ -12,10 +13,17 @@ namespace DALTheBookBusinessAccounting.Repositories
         private const int USER_LOGIN = 1;
         private const int USER_PASSWORD = 2;
         private const int EMAIL = 3;
+        private const int USER_NAME = 4;
 
         private const int ROLE_ID = 0;
 
         private readonly string connectionString = ConfigurationManager.ConnectionStrings["TheBookOfBusinessAccountingContext"].ConnectionString;
+        private readonly ProcForUser _procForUser;
+
+        public UserRepository()
+        {
+            _procForUser = new ProcForUser();
+        }
 
         public void Create(User user)
         {
@@ -26,29 +34,13 @@ namespace DALTheBookBusinessAccounting.Repositories
                 connection.Open();
                 using (SqlCommand command = new SqlCommand(SQL_EXPRESSION, connection)
                 {
-                    CommandType = System.Data.CommandType.StoredProcedure// указываем, что команда представляет хранимую процедуру
+                    CommandType = System.Data.CommandType.StoredProcedure
                 })
                 {
-                    SqlParameter loginParam = new SqlParameter// параметр для ввода login
-                    {
-                        ParameterName = "@UserLogin",
-                        Value = user.UserLogin
-                    };
-                    command.Parameters.Add(loginParam);  // добавляем параметр
-
-                    SqlParameter passwordNumberParam = new SqlParameter
-                    {
-                        ParameterName = "@UserPassword",
-                        Value = user.UserPassword
-                    };
-                    command.Parameters.Add(passwordNumberParam);
-
-                    SqlParameter emailParam = new SqlParameter
-                    {
-                        ParameterName = "@Email",
-                        Value = user.Email
-                    };
-                    command.Parameters.Add(emailParam);
+                    _procForUser.AddLogin(command, user);
+                    _procForUser.AddUserName(command, user);
+                    _procForUser.AddPassword(command, user);
+                    _procForUser.AddEmail(command, user);                   
 
                     command.ExecuteNonQuery();
                 }
@@ -64,20 +56,40 @@ namespace DALTheBookBusinessAccounting.Repositories
                 connection.Open();
                 using (SqlCommand command = new SqlCommand(SQL_EXPRESSION, connection)
                 {
-                    CommandType = System.Data.CommandType.StoredProcedure// указываем, что команда представляет хранимую процедуру
+                    CommandType = System.Data.CommandType.StoredProcedure
                 })
                 {
-                    SqlParameter idParam = new SqlParameter// параметр для ввода категории
-                    {
-                        ParameterName = "@Id",
-                        Value = id
-                    };
-
-                    command.Parameters.Add(idParam);  // добавляем параметр
+                    _procForUser.AddUserId(command, id);
 
                     command.ExecuteNonQuery();
                 }
             }
+        }
+
+        public User FindUser(string login)
+        {
+            const string SQL_EXPRESSION = "FindUser";
+
+            User user = null;
+
+            using (SqlConnection connection = new SqlConnection(connectionString))
+            {
+                connection.Open();
+
+                using (SqlCommand command = new SqlCommand(SQL_EXPRESSION, connection)
+                {
+                    CommandType = System.Data.CommandType.StoredProcedure
+                })
+                {
+                    _procForUser.AddLogin(command, login);
+
+                    SqlDataReader reader = command.ExecuteReader();
+
+                    user = GetUserFromDb(reader);
+                }
+            }
+
+            return user;
         }
 
         public User FindUserIsLogin(string login, string password)
@@ -92,22 +104,11 @@ namespace DALTheBookBusinessAccounting.Repositories
 
                 using (SqlCommand command = new SqlCommand(SQL_EXPRESSION, connection)
                 {
-                    CommandType = System.Data.CommandType.StoredProcedure// указываем, что команда представляет хранимую процедуру
+                    CommandType = System.Data.CommandType.StoredProcedure
                 })
                 {
-                    SqlParameter loginParam = new SqlParameter // параметр для ввода Login
-                    {
-                        ParameterName = "@UserLogin",
-                        Value = login
-                    };
-                    command.Parameters.Add(loginParam);// добавляем параметр
-
-                    SqlParameter passwordParam = new SqlParameter // параметр для ввода password
-                    {
-                        ParameterName = "@UserPassword",
-                        Value = password
-                    };
-                    command.Parameters.Add(passwordParam);// добавляем параметр
+                    _procForUser.AddLogin(command, login);
+                    _procForUser.AddPassword(command, password);                    
 
                     SqlDataReader reader = command.ExecuteReader();
 
@@ -130,15 +131,10 @@ namespace DALTheBookBusinessAccounting.Repositories
 
                 using (SqlCommand command = new SqlCommand(SQL_EXPRESSION, connection)
                 {
-                    CommandType = System.Data.CommandType.StoredProcedure// указываем, что команда представляет хранимую процедуру
+                    CommandType = System.Data.CommandType.StoredProcedure
                 })
                 {
-                    SqlParameter IdParam = new SqlParameter // параметр для ввода id
-                    {
-                        ParameterName = "@Id",
-                        Value = id
-                    };
-                    command.Parameters.Add(IdParam);// добавляем параметр
+                    _procForUser.AddUserId(command, id);
 
                     SqlDataReader reader = command.ExecuteReader();
 
@@ -159,21 +155,23 @@ namespace DALTheBookBusinessAccounting.Repositories
                 connection.Open();
                 using (SqlCommand command = new SqlCommand(SQL_EXPRESSION, connection)
                 {
-                    CommandType = System.Data.CommandType.StoredProcedure// указываем, что команда представляет хранимую процедуру
+                    CommandType = System.Data.CommandType.StoredProcedure
                 })
                 {
                     SqlDataReader reader = command.ExecuteReader();
-                    if (reader.HasRows) // если есть данные
+                    if (reader.HasRows) 
                     {
-                        while (reader.Read()) // построчно считываем данные
+                        while (reader.Read()) 
                         {
                             users.Add(new User
                             {
                                 Id = reader.GetInt32(ID),
                                 UserLogin = reader.GetString(USER_LOGIN),
-                                UserPassword = reader.GetString(USER_PASSWORD),                               
+                                UserPassword = reader.GetString(USER_PASSWORD),
+                                UserName = reader.GetString(USER_NAME),
+                                Email = reader.GetString(EMAIL),
                                 UsersRoles = GetCollectionRoles(reader.GetInt32(ID))
-                            });
+                            }) ;
                         }
                     }
                 }
@@ -191,22 +189,12 @@ namespace DALTheBookBusinessAccounting.Repositories
                 connection.Open();
                 using (SqlCommand command = new SqlCommand(SQL_EXPRESSION, connection)
                 {
-                    CommandType = System.Data.CommandType.StoredProcedure// указываем, что команда представляет хранимую процедуру
+                    CommandType = System.Data.CommandType.StoredProcedure
                 })
                 {
-                    SqlParameter passwordNumberParam = new SqlParameter
-                    {
-                        ParameterName = "@UserPassword",
-                        Value = user.UserPassword
-                    };
-                    command.Parameters.Add(passwordNumberParam);
-
-                    SqlParameter emailParam = new SqlParameter
-                    {
-                        ParameterName = "@Email",
-                        Value = user.Email
-                    };
-                    command.Parameters.Add(emailParam);
+                    _procForUser.AddUserId(command, user);
+                    _procForUser.AddPassword(command, user);
+                    _procForUser.UpdateUserName(command, user);
 
                     command.ExecuteNonQuery();
                 }
@@ -224,15 +212,10 @@ namespace DALTheBookBusinessAccounting.Repositories
 
                 using (SqlCommand command = new SqlCommand(SQL_EXPRESSION, connection)
                 {
-                    CommandType = System.Data.CommandType.StoredProcedure// указываем, что команда представляет хранимую процедуру
+                    CommandType = System.Data.CommandType.StoredProcedure
                 })
                 {
-                    SqlParameter IdParam = new SqlParameter // параметр для ввода id
-                    {
-                        ParameterName = "@Id",
-                        Value = id
-                    };
-                    command.Parameters.Add(IdParam);// добавляем параметр
+                    _procForUser.AddUserId(command, id);
 
                     SqlDataReader reader = command.ExecuteReader();
 
@@ -267,6 +250,7 @@ namespace DALTheBookBusinessAccounting.Repositories
                     user.UserLogin = reader.GetString(USER_LOGIN);
                     user.UserPassword = reader.GetString(USER_PASSWORD);
                     user.Email = reader.GetString(EMAIL);
+                    user.UserName = reader.GetString(USER_NAME);
                     user.UsersRoles = GetCollectionRoles(reader.GetInt32(ID));
                 }
             }

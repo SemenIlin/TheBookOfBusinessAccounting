@@ -47,6 +47,11 @@ namespace BLLTheBookOfBusinessAccounting.Services
             return _repositoryItem.GetAll().MapToListDtoModels();
         }
 
+        public ICollection<ImageDto> GetCollectionImages(int id)
+        {
+            return _repositoryItem.GetCollectionImages(id).MapToCollectionDtoModels();
+        }
+
         public void Update(ItemDto itemDto)
         {
             _repositoryItem.Update(itemDto.MapToDbModel());

@@ -115,6 +115,7 @@ namespace BLLTheBookOfBusinessAccounting.Mappers
                 Id = user.Id,
                 UserLogin = user.UserLogin,
                 UserPassword = user.UserPassword,
+                UserName = user.UserName,
                 Email = user.Email
             };
         }
@@ -125,6 +126,7 @@ namespace BLLTheBookOfBusinessAccounting.Mappers
             { 
                 Id = userDto.Id,
                 UserLogin = userDto.UserLogin,
+                UserName = userDto.UserName,
                 UserPassword = userDto.UserPassword,
                 Email = userDto.Email,
                 UsersRoles = userDto.RoleDtos.MapToCollectionDbModels(userDto.Id)
@@ -165,6 +167,33 @@ namespace BLLTheBookOfBusinessAccounting.Mappers
             return collectionRoles;
         }
 
+        public static ICollection<ImageDto> MapToCollectionDtoModels(this ICollection<Image> images)
+        {
+            var collectionByImage = new List<ImageDto>();
+            foreach (var image in images)
+            {
+                collectionByImage.Add(image.MapToDtoModel());
+            }
+
+            return collectionByImage;
+        }
+
+        public static ICollection<Image> MapToCollectionDBModels(this ICollection<ImageDto> itemDtos)
+        {
+            if(itemDtos == null)
+            {
+                return null;
+            }
+
+            var collectionByImage = new List<Image>();
+            foreach (var itemDto in itemDtos)
+            {
+                collectionByImage.Add(itemDto.MapToDbModel());
+            }
+
+            return collectionByImage;
+        }
+
         private static ICollection<UsersRole> MapToCollectionDbModels(this ICollection<RoleDto> roleDtos, int userId)
         {
             var collectionRoles = new List<UsersRole>();
@@ -178,28 +207,6 @@ namespace BLLTheBookOfBusinessAccounting.Mappers
             }
 
             return collectionRoles;
-        }
-
-        private static ICollection<ImageDto> MapToCollectionDtoModels(this ICollection<Image> images)
-        {
-            var collectionByImage = new List<ImageDto>();
-            foreach (var image in images)
-            {
-                collectionByImage.Add(image.MapToDtoModel());
-            }
-
-            return collectionByImage;
-        }
-
-        private static ICollection<Image> MapToCollectionDBModels(this ICollection<ImageDto> itemDtos)
-        {
-            var collectionByImage = new List<Image>();
-            foreach (var itemDto in itemDtos)
-            {
-                collectionByImage.Add(itemDto.MapToDbModel());
-            }
-
-            return collectionByImage;
-        }
+        }        
     }
 }

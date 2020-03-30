@@ -43,6 +43,9 @@ namespace TheBookBusinessAccounting.Models
 
         [Required]
         [Display(Name = "Статус")]
-        public int StatusId { get; set; }        
+        public int StatusId { get; set; }      
+        
+        public Dictionary<int,string> Categories { get; set; }
+        public Dictionary<int, string> Statuses { get; set; }
     }
 }

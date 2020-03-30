@@ -1,6 +1,4 @@
-﻿using BLLTheBookOfBusinessAccounting.Interfaces;
-using BLLTheBookOfBusinessAccounting.Services;
-using DALTheBookBusinessAccounting.Repositories;
+﻿using BLLTheBookOfBusinessAccounting.Principals;
 using System.Web;
 using System.Web.Mvc;
 
@@ -8,37 +6,35 @@ namespace TheBookBusinessAccounting.Infrastructure
 {
     public class MyAuthorizeAttribute : AuthorizeAttribute
     {
-        private readonly string[] _allowedRoles;
-        private readonly IRoleService _roleService;
-
-        public MyAuthorizeAttribute(string[] roles)
-        {
-            _allowedRoles = roles;
-            _roleService = new RoleService(new RoleRepository());
-        }
+        private UserPrincipal userPrinciple;
+        
+        private string[] _allowedRoles;
 
         protected override bool AuthorizeCore(HttpContextBase httpContext)
-        {
+        {            
+            if (!System.String.IsNullOrEmpty(base.Roles))
+            {
+                _allowedRoles = base.Roles.Split(new char[] { ',' });
+                for (int i = 0; i < _allowedRoles.Length; i++)
+                {
+                    _allowedRoles[i] = _allowedRoles[i].Trim();
+                }
+            }
             return httpContext.Request.IsAuthenticated &&
-                Role(_roleService,httpContext);
+                Role(httpContext);
         }
 
-        private bool Role(IRoleService roleService, HttpContextBase httpContext)
+        private bool Role(HttpContextBase httpContext)
         {
             if (_allowedRoles.Length > 0)
             {
-                var rolesOfUser = roleService.GetAllRolesOfUser(httpContext.User.Identity.Name);
-                foreach(var role in rolesOfUser)
+                for (int i = 0; i < _allowedRoles.Length; i++)
                 {
-                    for (int i = 0; i < _allowedRoles.Length; i++)
+                    if (httpContext.User.IsInRole(_allowedRoles[i]))
                     {
-                        if (role.RoleName == _allowedRoles[i])
-                        {
-                            return true;
-                        }
+                        return true;
                     }
                 }
-                
                 return false;
             }
             return true;

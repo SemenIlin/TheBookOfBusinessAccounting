@@ -121,8 +121,13 @@ namespace TheBookBusinessAccounting.Extensions
             };
         }
 
-        private static ICollection<ImageDto> MapToCollectionDtoModels(this ICollection<ImageViewModel> imageViewModels)
+        public static ICollection<ImageDto> MapToCollectionDtoModels(this ICollection<ImageViewModel> imageViewModels)
         {
+            if(imageViewModels == null)
+            {
+                return null;
+            }
+
             var imageDto = new List<ImageDto>();
             foreach (var imageViewModel in imageViewModels)
             {
@@ -132,7 +137,7 @@ namespace TheBookBusinessAccounting.Extensions
             return imageDto;
         }
 
-        private static ICollection<ImageViewModel> MapToCollectionViewModels(this ICollection<ImageDto> imageDtos)
+        public static ICollection<ImageViewModel> MapToCollectionViewModels(this ICollection<ImageDto> imageDtos)
         {
             var imageViewModel = new List<ImageViewModel>();
             foreach (var imageDto in imageDtos)
@@ -142,5 +147,76 @@ namespace TheBookBusinessAccounting.Extensions
 
             return imageViewModel;
         }
+
+        public static UserViewModel MapToViewModel(this UserDto userDto)
+        {
+            return new UserViewModel()
+            {
+                Id = userDto.Id,
+                UserLogin = userDto.UserLogin,
+                UserName = userDto.UserName,
+                UserPassword = userDto.UserPassword,
+                Email = userDto.Email,
+                Roles = userDto.RoleDtos.MapToCollectionViewModels()
+            };
+        }
+
+        public static UserDto MapToDtoModel(this UserViewModel userViewModel)
+        {
+            return new UserDto()
+            {
+                Id = userViewModel.Id,
+                UserLogin = userViewModel.UserLogin,
+                UserPassword = userViewModel.UserPassword,
+                UserName = userViewModel.UserName,
+                Email = userViewModel.Email,
+                RoleDtos = userViewModel.Roles.MapToCollectionDtoModels()
+            };
+        }
+
+        public static IEnumerable<UserViewModel> MapToListViewModels(this IEnumerable<UserDto> userDtos)
+        {
+            return userDtos.Select(userDto => userDto.MapToViewModel());
+        }
+        
+        public static ICollection<RoleDto> MapToCollectionDtoModels(this ICollection<RoleViewModel> roleViewModels )
+        {
+            if (roleViewModels == null)
+            {
+                return null;
+            }
+
+            var roleDtos = new List<RoleDto>();
+            foreach (var roleViewModel in roleViewModels)
+            {
+                roleDtos.Add(new RoleDto()
+                {
+                    Id = roleViewModel.Id,
+                    RoleName = roleViewModel.RoleName
+                });
+            };
+
+            return roleDtos;
+        }
+
+        public static ICollection<RoleViewModel> MapToCollectionViewModels(this ICollection<RoleDto> roleDtos)
+        {
+            if (roleDtos == null)
+            {
+                return null;
+            }
+
+            var roleViewModels = new List<RoleViewModel>();
+            foreach (var roleDto in roleDtos)
+            {
+                roleViewModels.Add(new RoleViewModel()
+                {
+                    Id = roleDto.Id,
+                    RoleName = roleDto.RoleName
+                });
+            };
+
+            return roleViewModels;
+        }   
     }
 }

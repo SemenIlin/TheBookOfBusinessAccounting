@@ -1,8 +1,6 @@
 ﻿using BLLTheBookOfBusinessAccounting.Interfaces;
 using BLLTheBookOfBusinessAccounting.ModelsDto;
 using TheBookBusinessAccounting.Infrastructure;
-using System.Collections.Generic;
-using System.Linq;
 using System.Web;
 using System.Web.Mvc;
 using TheBookBusinessAccounting.Models;
@@ -55,9 +53,18 @@ namespace TheBookBusinessAccounting.Controllers
         [HttpGet]
         public ActionResult GetImage(int? id)
         {
-            var imageAndActionResult = GetActionResultAndImage(id);
+            if (id == null)
+            {
+                return HttpNotFound();
+            }
 
-            return imageAndActionResult.ActionResult ?? View(imageAndActionResult.ImageModel);
+            var image = _imageService.Get(id.Value);
+            if (image == null)
+            {
+                return HttpNotFound();
+            }
+
+            return View(image.MapToViewModel());
         }
 
         [NonAction]
@@ -67,23 +74,6 @@ namespace TheBookBusinessAccounting.Controllers
             ViewBag.Items = items;
 
             return ViewBag.Items;
-        }
-
-        [NonAction]
-        private (ActionResult ActionResult, ImageViewModel ImageModel) GetActionResultAndImage(int? id)
-        {
-            if (id == null)
-            {
-                return (HttpNotFound(), null);
-            }
-
-            var image = _imageService.Get(id.Value);
-            if (image == null)
-            {
-                return (HttpNotFound(), null);
-            }
-
-            return (null, image.MapToViewModel());
         }
     }
 }

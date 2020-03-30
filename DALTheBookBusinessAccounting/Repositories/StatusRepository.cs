@@ -1,4 +1,5 @@
-﻿using DALTheBookBusinessAccounting.Entities;
+﻿using DALTheBookBusinessAccounting.BuilderForProc;
+using DALTheBookBusinessAccounting.Entities;
 using DALTheBookBusinessAccounting.Interfaces;
 using System.Collections.Generic;
 using System.Configuration;
@@ -12,7 +13,13 @@ namespace DALTheBookBusinessAccounting.Repositories
         private const int TITLE = 1;
 
         private readonly string connectionString = ConfigurationManager.ConnectionStrings["TheBookOfBusinessAccountingContext"].ConnectionString;
-          
+        private readonly ProcForStatus _procForStatus;
+
+        public StatusRepository()
+        {
+            _procForStatus = new ProcForStatus();
+        }
+
         public Status Get(int id)
         {
             const string SQL_EXPRESSION = "GetStatus";
@@ -25,16 +32,10 @@ namespace DALTheBookBusinessAccounting.Repositories
 
                 using (SqlCommand command = new SqlCommand(SQL_EXPRESSION, connection)
                 {
-                    CommandType = System.Data.CommandType.StoredProcedure// указываем, что команда представляет хранимую процедуру
+                    CommandType = System.Data.CommandType.StoredProcedure
                 })
                 {
-                    SqlParameter IdParam = new SqlParameter // параметр для ввода id
-                    {
-                        ParameterName = "@Id",
-                        Value = id
-                    };
-
-                    command.Parameters.Add(IdParam);// добавляем параметр
+                    _procForStatus.AddStatusId(command, id);                  
 
                     SqlDataReader reader = command.ExecuteReader();
 
@@ -64,13 +65,13 @@ namespace DALTheBookBusinessAccounting.Repositories
                 connection.Open();
                 using(SqlCommand command = new SqlCommand(SQL_EXPRESSION, connection)
                 {
-                    CommandType = System.Data.CommandType.StoredProcedure// указываем, что команда представляет хранимую процедуру
+                    CommandType = System.Data.CommandType.StoredProcedure
                 })
                 {
                    SqlDataReader reader = command.ExecuteReader();
-                    if (reader.HasRows) // если есть данные
+                    if (reader.HasRows) 
                     {
-                        while (reader.Read()) // построчно считываем данные
+                        while (reader.Read())
                         {
                             statuses.Add(new Status
                             {
