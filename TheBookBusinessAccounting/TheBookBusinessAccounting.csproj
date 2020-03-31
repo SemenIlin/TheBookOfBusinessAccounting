@@ -138,6 +138,7 @@
     <Compile Include="App_Start\FilterConfig.cs" />
     <Compile Include="App_Start\RouteConfig.cs" />
     <Compile Include="Controllers\AccountController.cs" />
+    <Compile Include="Controllers\AdministratorController.cs" />
     <Compile Include="Controllers\EditorController.cs" />
     <Compile Include="Controllers\HomeController.cs" />
     <Compile Include="Controllers\ImageController.cs" />
@@ -156,6 +157,7 @@
     <Compile Include="Models\LoginAndRegistration\LoginModel.cs" />
     <Compile Include="Models\LoginAndRegistration\RegisterModel.cs" />
     <Compile Include="Models\Pagination\IndexViewModel.cs" />
+    <Compile Include="Models\Pagination\MainViewModel.cs" />
     <Compile Include="Models\Pagination\PageInfo.cs" />
     <Compile Include="Models\RoleViewModel.cs" />
     <Compile Include="Models\StatusViewModel.cs" />
@@ -209,11 +211,16 @@
     <Content Include="Views\Image\GetImage.cshtml" />
     <Content Include="Views\User\GetItem.cshtml" />
     <Content Include="Views\Navigation\Menu.cshtml" />
-    <Content Include="Views\User\Image.cshtml" />
+    <Content Include="Views\User\Partial\Image.cshtml" />
     <Content Include="Views\Account\Login.cshtml" />
     <Content Include="Views\Account\Registration.cshtml" />
     <Content Include="Views\Shared\_LoginPartial.cshtml" />
     <Content Include="Views\Shared\EditUser.cshtml" />
+    <Content Include="Views\Administrator\CreateUser.cshtml" />
+    <Content Include="Views\Administrator\EditUser.cshtml" />
+    <Content Include="Views\Administrator\DeleteUser.cshtml" />
+    <Content Include="Views\Administrator\Main.cshtml" />
+    <Content Include="Views\Administrator\Partial\GetUser.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />

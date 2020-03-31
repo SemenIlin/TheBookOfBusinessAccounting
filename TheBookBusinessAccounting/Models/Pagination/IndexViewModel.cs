@@ -10,12 +10,13 @@ namespace TheBookBusinessAccounting.Models.Pagination
 
         public string ActionName { get; set; }
         public string SearchText { get; set; }
+        public string StatusId { get; set; }
         public Dictionary<int, string> Statuses { get; } = new Dictionary<int, string>()
         {
             {1, "будет приобретён" },
             {2, "в работе" },
             {3, "списан" },
-            {4, "" }
+            {4, "все" }
         };
     }
 }

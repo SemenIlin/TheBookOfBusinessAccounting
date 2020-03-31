@@ -11,6 +11,9 @@ namespace BLLTheBookOfBusinessAccounting.Interfaces
         UserDto Get(int id);
         IEnumerable<UserDto> GetAll();
 
+        void AddRoleForUser(int userId, int roleId);
+        void DeleteRoleFromUser(int userId, int roleId);
+
         void Add(UserDto item);
         void Update(UserDto item);
         void Delete(int id);

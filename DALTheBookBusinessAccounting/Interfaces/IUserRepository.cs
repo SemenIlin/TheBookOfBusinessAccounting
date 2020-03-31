@@ -13,6 +13,9 @@ namespace DALTheBookBusinessAccounting.Interfaces
         User FindUserIsLogin(string login, string password);
         User FindUser(string login);
 
+        void AddRole(int userId, int roleId);
+        void DeleteRole(int userId, int roleId);
+
         void Create(User item);
         void Update(User item);
         void Delete(int id);

@@ -1,5 +1,4 @@
 ﻿using BLLTheBookOfBusinessAccounting.Interfaces;
-using BLLTheBookOfBusinessAccounting.ModelsDto;
 using System.Web.Mvc;
 using System.Web.Security;
 using TheBookBusinessAccounting.Extensions;
@@ -29,8 +28,7 @@ namespace TheBookBusinessAccounting.Controllers
         {
             if (ModelState.IsValid)
             {
-                UserDto user = null;
-                user = _userService.Find(loginModel.Login, loginModel.Password);
+                var user = _userService.Find(loginModel.Login, loginModel.Password);
                
                 if (user != null)
                 {
@@ -58,15 +56,12 @@ namespace TheBookBusinessAccounting.Controllers
         {
             if (ModelState.IsValid)
             {
-                UserDto user = null;
-
-                user = _userService.Find(registerModel.Login, registerModel.Password);
+                var user = _userService.Find(registerModel.Login, registerModel.Password);
                 
                 if (user == null)
                 {
                     _userService.Add(registerModel.MapToDtoModel());
 
-                    // если пользователь удачно добавлен в бд
                     if (user != null)
                     {
                         FormsAuthentication.SetAuthCookie(registerModel.Login, true);

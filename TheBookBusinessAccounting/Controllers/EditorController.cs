@@ -7,7 +7,6 @@ using TheBookBusinessAccounting.Extensions;
 using TheBookBusinessAccounting.Models;
 using System.Collections.Generic;
 using System.Linq;
-using TheBookBusinessAccounting.Models.Pagination;
 
 namespace TheBookBusinessAccounting.Controllers
 {
@@ -35,29 +34,6 @@ namespace TheBookBusinessAccounting.Controllers
         }
 
         [HttpGet]
-        public ActionResult Index()
-        {
-            return RedirectToAction("Index", "User");
-        }
-
-        //[HttpGet]
-        //[ActionName("SearchItem")]
-        //public ActionResult GetSearchItem(string search, int page = 1)
-        //{
-        //    IndexViewModel ivm = GetSearchItems(search, page);
-
-        //    return View("Index", ivm);
-        //}
-
-        //[HttpPost]
-        //public ActionResult SearchItem(string search, int page = 1)
-        //{
-        //    IndexViewModel ivm = GetSearchItems(search, page);
-
-        //    return View("Index", ivm);
-        //}
-
-        [HttpGet]
         public ActionResult AddItem()
         {
             var itemViewModel = new ItemViewModel()
@@ -71,13 +47,31 @@ namespace TheBookBusinessAccounting.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult AddItem(ItemViewModel itemViewModel)
+        public ActionResult AddItem(ItemViewModel itemViewModel, HttpPostedFileBase uploadImage)
         {
+            itemViewModel.ImageViewModels = _itemService.GetCollectionImages(itemViewModel.Id).MapToCollectionViewModels();
+          
+                
             if (ModelState.IsValid)
             {
                 _itemService.Add(itemViewModel.MapToDtoModel());
 
-                return RedirectToAction("Index");
+                var id = _userService.GetAll().LastOrDefault().Id;
+                if (uploadImage != null)
+                {
+                    itemViewModel.Screen = ImageConvert.ImageToByteArray(uploadImage);
+                    itemViewModel.ScreenFormat = ImageConvert.GetImageExtension(uploadImage);
+
+                    var imageVM = new ImageViewModel()
+                    {
+                        Screen = itemViewModel.Screen,
+                        ScreenFormat = itemViewModel.ScreenFormat,
+                        ItemId = id
+                    };
+                    _imageService.Add(imageVM.MapToDtoModel());
+                }
+
+                return RedirectToAction("Index", "User");
             }
 
             itemViewModel.Statuses = DictionaryOfStatuses();
@@ -129,7 +123,7 @@ namespace TheBookBusinessAccounting.Controllers
                 
                 _itemService.Update(itemViewModel.MapToDtoModel());
 
-                return RedirectToAction("Index");
+                return RedirectToAction("Index", "User");
             }
 
             itemViewModel.Statuses = DictionaryOfStatuses();
@@ -172,7 +166,7 @@ namespace TheBookBusinessAccounting.Controllers
 
             _itemService.Delete(id.Value);
 
-            return RedirectToAction("Index");
+            return RedirectToAction("Index", "User");
         }
 
         [HttpPost]

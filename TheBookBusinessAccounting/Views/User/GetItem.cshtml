@@ -54,12 +54,15 @@
 			</dt>
 
 			<dd>
-				@Html.Raw("<img style='width:200px; height:200px;' src=\"data:image/jpeg;base64,"
-										 + Convert.ToBase64String(image.Screen) + "\" />")
+				@Html.Partial("Partial\\Image", image)
 			</dd>
 		}
 	</dl>
 </div>
-<p>
-   <a href="@Url.Action("EditItem", "Editor", new { id = Model.Id })" >Редактировать</a> 
-</p>
+
+@if(User.IsInRole("Editor"))
+{
+    <p>
+       <a href="@Url.Action("EditItem", "Editor", new { id = Model.Id })" >Редактировать</a> 
+    </p>
+}

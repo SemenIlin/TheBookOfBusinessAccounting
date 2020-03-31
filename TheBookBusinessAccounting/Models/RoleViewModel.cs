@@ -7,6 +7,6 @@ namespace TheBookBusinessAccounting.Models
         public int Id { get; set; }
         public string RoleName { get; set; }
         
-        public ICollection<UserViewModel> userViewModels { get; set; }
+        public ICollection<UserViewModel> UserViewModels { get; set; }
     }
 }

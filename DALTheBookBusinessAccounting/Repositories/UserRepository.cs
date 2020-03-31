@@ -25,6 +25,24 @@ namespace DALTheBookBusinessAccounting.Repositories
             _procForUser = new ProcForUser();
         }
 
+        public void AddRole(int userId, int roleId)
+        {
+            const string SQL_EXPRESSION = "AddRoleForUser";
+            using (SqlConnection connection = new SqlConnection(connectionString))
+            {
+                connection.Open();
+                using (SqlCommand command = new SqlCommand(SQL_EXPRESSION, connection)
+                {
+                    CommandType = System.Data.CommandType.StoredProcedure
+                })
+                {
+                    _procForUser.AddUserId(command, userId);
+                    _procForUser.AddRoleId(command, roleId);
+
+                    command.ExecuteNonQuery();                
+                }
+            }
+        }
         public void Create(User user)
         {
             const string SQL_EXPRESSION = "AddUser";
@@ -60,6 +78,25 @@ namespace DALTheBookBusinessAccounting.Repositories
                 })
                 {
                     _procForUser.AddUserId(command, id);
+
+                    command.ExecuteNonQuery();
+                }
+            }
+        }
+
+        public void DeleteRole(int userId, int roleId)
+        {
+            const string SQL_EXPRESSION = "DelRoleFromUser";
+            using (SqlConnection connection = new SqlConnection(connectionString))
+            {
+                connection.Open();
+                using (SqlCommand command = new SqlCommand(SQL_EXPRESSION, connection)
+                {
+                    CommandType = System.Data.CommandType.StoredProcedure
+                })
+                {
+                    _procForUser.AddUserId(command, userId);
+                    _procForUser.AddRoleId(command, roleId);
 
                     command.ExecuteNonQuery();
                 }

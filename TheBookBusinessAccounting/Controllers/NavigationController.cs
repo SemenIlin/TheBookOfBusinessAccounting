@@ -25,7 +25,7 @@ namespace TheBookBusinessAccounting.Controllers
                 .Distinct()
                 .OrderBy(x => x);
 
-            return PartialView(categories);
+            return PartialView("Menu", categories);
         }
     }
 }

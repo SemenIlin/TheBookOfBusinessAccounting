@@ -1,5 +1,4 @@
 ﻿using BLLTheBookOfBusinessAccounting.Interfaces;
-using BLLTheBookOfBusinessAccounting.ModelsDto;
 using System.Linq;
 using System.Web.Mvc;
 using TheBookBusinessAccounting.Extensions;
@@ -14,25 +13,16 @@ namespace TheBookBusinessAccounting.Controllers
         private readonly IRoleService _roleService;
         private readonly IUserService _userService;
         private readonly IItemService _itemService;
-        private readonly IStatusService _statusService;
-        private readonly IReadAndEditService<CategoryDto> _categoryService;
-        private readonly IReadAndEditService<ImageDto> _imageService;
 
         public UserController(
             IRoleService roleService,
             IUserService userService,
-            IItemService itemService,
-            IStatusService statusService,
-            IReadAndEditService<CategoryDto> categoryService,
-            IReadAndEditService<ImageDto> imageService
+            IItemService itemService
             )
         {
             _roleService = roleService;
             _userService = userService;
             _itemService = itemService;
-            _categoryService = categoryService;
-            _statusService = statusService;
-            _imageService = imageService;
         }
 
         [HttpGet]
@@ -46,7 +36,7 @@ namespace TheBookBusinessAccounting.Controllers
                 OrderBy(item => item.Title).
                 Skip((page - 1) * pageSize).Take(pageSize);
 
-            PageInfo pageInfo = new PageInfo
+            var pageInfo = new PageInfo
             {
                 PageNumber = page,
                 PageSize = pageSize,
@@ -55,7 +45,7 @@ namespace TheBookBusinessAccounting.Controllers
                    allItems.Where(p => p.Category.ToLower().Contains(category.ToLower())).Count()
             };
 
-            IndexViewModel ivm = new IndexViewModel
+            var ivm = new IndexViewModel
             {
                 PageInfo = pageInfo,
                 ItemViewModels = itemPerPages.MapToListViewModels(),
@@ -67,17 +57,17 @@ namespace TheBookBusinessAccounting.Controllers
 
         [HttpGet]
         [ActionName("SearchItem")]
-        public ActionResult GetSearchItem(string search, int page = 1)
+        public ActionResult GetSearchItem(string search, int statusId = 4, int page = 1)
         {
-            IndexViewModel ivm = GetSearchItems(search, page);
+            var ivm = GetSearchItems(search, statusId, page);
 
             return View("Index", ivm);
         }
 
         [HttpPost]
-        public ActionResult SearchItem(string search, int page = 1)
+        public ActionResult SearchItem(string search, int statusId = 4, int page = 1)
         {
-            IndexViewModel ivm = GetSearchItems(search, page);
+            var ivm = GetSearchItems(search, statusId, page);
 
             return View("Index", ivm);
         }
@@ -102,13 +92,14 @@ namespace TheBookBusinessAccounting.Controllers
         [HttpGet]
         public ActionResult EditUser()
         {
-            var userViewModel = _userService.Find(User.Identity.Name).MapToViewModel();
+            var userDto = _userService.Find(User.Identity.Name);
 
-            if(userViewModel == null)
+            if(userDto == null)
             {
                 return HttpNotFound();
             }
 
+            var userViewModel = userDto.MapToViewModel();
             return View(userViewModel);
         }
 
@@ -129,7 +120,7 @@ namespace TheBookBusinessAccounting.Controllers
         }
 
         [NonAction]
-        private IndexViewModel GetSearchItems(string search, int page = 1)
+        private IndexViewModel GetSearchItems(string search, int statusId = 4, int page = 1)
         {
             const int pageSize = 10; 
             var allItems = _itemService.GetAll();
@@ -137,23 +128,42 @@ namespace TheBookBusinessAccounting.Controllers
                 Where(p => search == null ||
                       p.Category.ToLower().Contains(search.ToLower()) ||
                       p.Status.ToLower().Contains(search.ToLower()) ||
-                      p.Title.ToLower().Contains(search.ToLower())).
-                OrderBy(item => item.Title).
-                Skip((page - 1) * pageSize).Take(pageSize);
+                      p.Title.ToLower().Contains(search.ToLower()));
 
-            PageInfo pageInfo = new PageInfo
+            var pageInfo = new PageInfo()
             {
                 PageNumber = page,
-                PageSize = pageSize,
-                TotalItems = search == null ?
+                PageSize = pageSize
+            };
+
+            if (statusId == 4)
+            {
+                itemPerPages = itemPerPages.OrderBy(item => item.Title).
+                    Skip((page - 1) * pageSize).Take(pageSize);
+
+                pageInfo.TotalItems = search == null ?
                    allItems.Count() :
                    allItems.Where(
                        p => p.Category.ToLower().Contains(search.ToLower()) ||
                        p.Status.ToLower().Contains(search.ToLower()) ||
-                       p.Title.ToLower().Contains(search.ToLower())).Count()
-            };
+                       p.Title.ToLower().Contains(search.ToLower())).Count();
+            }
+            else
+            {
+                itemPerPages = itemPerPages.Where(p => p.StatusId == statusId).
+                    OrderBy(item => item.Title).
+                    Skip((page - 1) * pageSize).Take(pageSize);
 
-            IndexViewModel ivm = new IndexViewModel
+                pageInfo.TotalItems = search == null ?
+                  allItems.Count() :
+                  allItems.Where(
+                      p => p.Category.ToLower().Contains(search.ToLower()) ||
+                      p.Status.ToLower().Contains(search.ToLower()) ||
+                      p.Title.ToLower().Contains(search.ToLower())).
+                      Where(p => p.StatusId == statusId).Count();
+            }            
+
+            var ivm = new IndexViewModel
             {
                 PageInfo = pageInfo,
                 ItemViewModels = itemPerPages.MapToListViewModels(),

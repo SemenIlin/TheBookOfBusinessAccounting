@@ -5,6 +5,7 @@ using System.Web;
 using System.Web.Mvc;
 using TheBookBusinessAccounting.Models;
 using TheBookBusinessAccounting.Extensions;
+using System.Collections.Generic;
 
 namespace TheBookBusinessAccounting.Controllers
 {
@@ -28,8 +29,12 @@ namespace TheBookBusinessAccounting.Controllers
         [HttpGet]
         public ActionResult AddImage()
         {
-            GetListItems();
-            return View();
+            var imageViewModel = new ImageViewModel()
+            {
+                Items = GetListItems()
+            };
+            
+            return View(imageViewModel);
         }
 
         [HttpPost]
@@ -46,7 +51,7 @@ namespace TheBookBusinessAccounting.Controllers
                 return RedirectToAction("Index");
             }
 
-            GetListItems();
+            imageViewModel.Items = GetListItems();
             return View(imageViewModel);
         }
 
@@ -68,12 +73,16 @@ namespace TheBookBusinessAccounting.Controllers
         }
 
         [NonAction]
-        private SelectList GetListItems()
+        private Dictionary<int, string> GetListItems()
         {
-            var items = new SelectList(_itemService.GetAll(), "Id", "Title");
-            ViewBag.Items = items;
+            var items = _itemService.GetAll();
+            var dictionaryOfItems = new Dictionary<int, string>();
+            foreach (var item in items)
+            {
+                dictionaryOfItems.Add(item.Id, item.Title);
+            }
 
-            return ViewBag.Items;
+            return dictionaryOfItems;
         }
     }
 }

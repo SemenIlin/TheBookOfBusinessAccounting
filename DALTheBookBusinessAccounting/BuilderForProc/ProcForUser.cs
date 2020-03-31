@@ -5,6 +5,16 @@ namespace DALTheBookBusinessAccounting.BuilderForProc
 {
     public class ProcForUser
     {
+        public void AddRoleId(SqlCommand command, int roleId)
+        {
+            SqlParameter roleIdParam = new SqlParameter
+            {
+                ParameterName = "@RoleId",
+                Value = roleId
+            };
+            command.Parameters.Add(roleIdParam);
+        }
+
         public void AddLogin(SqlCommand command, string login)
         {
             SqlParameter loginParam = new SqlParameter

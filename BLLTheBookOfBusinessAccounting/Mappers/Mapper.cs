@@ -9,34 +9,38 @@ namespace BLLTheBookOfBusinessAccounting.Mappers
     {
         public static Item MapToDbModel(this ItemDto itemDto)
         {
-            return new Item()
-            {
-                Id = itemDto.Id,
-                Title = itemDto.Title,
-                InventoryNumber = itemDto.InventoryNumber,
-                LocationOfItem = itemDto.LocationOfItem,
-                About = itemDto.About,
-                Images = itemDto.ImageDtos.MapToCollectionDBModels(),
-                StatusId = itemDto.StatusId,
-                CategoryId = itemDto.CategoryId
-            };
+            return itemDto == null ?
+                null :
+                new Item()
+                {
+                    Id = itemDto.Id,
+                    Title = itemDto.Title,
+                    InventoryNumber = itemDto.InventoryNumber,
+                    LocationOfItem = itemDto.LocationOfItem,
+                    About = itemDto.About,
+                    Images = itemDto.ImageDtos.MapToCollectionDBModels(),
+                    StatusId = itemDto.StatusId,
+                    CategoryId = itemDto.CategoryId
+                };
         }
 
         public static ItemDto MapToDtoModel(this Item item)
         {
-            return new ItemDto()
-            {
-                Id = item.Id,
-                Title = item.Title,
-                InventoryNumber = item.InventoryNumber,
-                About = item.About,
-                LocationOfItem = item.LocationOfItem,
-                CategoryId = item.CategoryId,
-                StatusId = item.StatusId,
-                Status = item.StatusName,
-                ImageDtos = item.Images.MapToCollectionDtoModels(),
-                Category = item.CategoryName
-            };
+            return item == null ?
+                null : 
+                new ItemDto()
+                {
+                    Id = item.Id,
+                    Title = item.Title,
+                    InventoryNumber = item.InventoryNumber,
+                    About = item.About,
+                    LocationOfItem = item.LocationOfItem,
+                    CategoryId = item.CategoryId,
+                    StatusId = item.StatusId,
+                    Status = item.StatusName,
+                    ImageDtos = item.Images.MapToCollectionDtoModels(),
+                    Category = item.CategoryName
+                };
         }
 
         public static IEnumerable<ItemDto> MapToListDtoModels(this IEnumerable<Item> items)
@@ -46,20 +50,24 @@ namespace BLLTheBookOfBusinessAccounting.Mappers
 
         public static Category MapToDbModel(this CategoryDto categoryDto)
         {
-            return new Category()
-            {
-                Id = categoryDto.Id,
-                Title = categoryDto.Title
-            };
+            return categoryDto == null ? 
+                null : 
+                new Category()
+                {
+                    Id = categoryDto.Id,
+                    Title = categoryDto.Title
+                };
         }
 
         public static CategoryDto MapToDtoModel(this Category category)
         {
-            return new CategoryDto()
-            {
-                Id = category.Id,
-                Title = category.Title
-            };
+            return category == null ? 
+                null : 
+                new CategoryDto()
+                {
+                    Id = category.Id,
+                    Title = category.Title
+                };
         }
 
         public static IEnumerable<CategoryDto> MapToListDtoModels(this IEnumerable<Category> categories)
@@ -69,11 +77,13 @@ namespace BLLTheBookOfBusinessAccounting.Mappers
 
         public static StatusDto MapToDtoModel(this Status status)
         {
-            return new StatusDto()
-            {
-                Id = status.Id,
-                Title = status.Title,
-            };
+            return status == null ? 
+                null : 
+                new StatusDto()
+                {
+                    Id = status.Id,
+                    Title = status.Title,
+                };
         }
 
         public static IEnumerable<StatusDto> MapToListDtoModels(this IEnumerable<Status> statuses)
@@ -83,24 +93,28 @@ namespace BLLTheBookOfBusinessAccounting.Mappers
 
         public static ImageDto MapToDtoModel(this Image image)
         {
-            return new ImageDto()
-            {
-                Id = image.Id,
-                Screen = image.Screen,
-                ScreenFormat = image.ScreenFormat,
-                ItemId = image.ItemId
-            };
+            return image == null ?
+                null : 
+                new ImageDto()
+                {
+                    Id = image.Id,
+                    Screen = image.Screen,
+                    ScreenFormat = image.ScreenFormat,
+                    ItemId = image.ItemId
+                };
         }
 
         public static Image MapToDbModel(this ImageDto imageDto)
         {
-            return new Image()
-            {
-                Id = imageDto.Id,
-                Screen = imageDto.Screen,
-                ScreenFormat = imageDto.ScreenFormat,
-                ItemId = imageDto.ItemId
-            };
+            return imageDto == null ?
+                null :
+                new Image()
+                {
+                    Id = imageDto.Id,
+                    Screen = imageDto.Screen,
+                    ScreenFormat = imageDto.ScreenFormat,
+                    ItemId = imageDto.ItemId
+                };
         }
 
         public static IEnumerable<ImageDto> MapToListDtoModels(this IEnumerable<Image> images)
@@ -110,27 +124,31 @@ namespace BLLTheBookOfBusinessAccounting.Mappers
 
         public static UserDto MapToDtoModel(this User user)
         {
-            return new UserDto()
-            {
-                Id = user.Id,
-                UserLogin = user.UserLogin,
-                UserPassword = user.UserPassword,
-                UserName = user.UserName,
-                Email = user.Email
-            };
+            return user == null ? 
+                null : 
+                new UserDto()
+                {
+                    Id = user.Id,
+                    UserLogin = user.UserLogin,
+                    UserPassword = user.UserPassword,
+                    UserName = user.UserName,
+                    Email = user.Email
+                };
         }
 
         public static User MapToDbModel(this UserDto userDto)
         {
-            return new User()
-            { 
-                Id = userDto.Id,
-                UserLogin = userDto.UserLogin,
-                UserName = userDto.UserName,
-                UserPassword = userDto.UserPassword,
-                Email = userDto.Email,
-                UsersRoles = userDto.RoleDtos.MapToCollectionDbModels(userDto.Id)
-            };
+            return userDto == null ? 
+                null : 
+                new User()
+                { 
+                    Id = userDto.Id,
+                    UserLogin = userDto.UserLogin,
+                    UserName = userDto.UserName,
+                    UserPassword = userDto.UserPassword,
+                    Email = userDto.Email,
+                    UsersRoles = userDto.RoleDtos.MapToCollectionDbModels(userDto.Id)
+                };
         }
 
         public static IEnumerable<UserDto> MapToListDtoModels(this IEnumerable<User> users)
@@ -140,11 +158,13 @@ namespace BLLTheBookOfBusinessAccounting.Mappers
 
         public static RoleDto MapToDtoModel(this Role role)
         {
-            return new RoleDto()
-            { 
-                Id = role.Id,
-                RoleName = role.RoleName
-            };
+            return role == null ? 
+                null : 
+                new RoleDto()
+                { 
+                    Id = role.Id,
+                    RoleName = role.RoleName
+                };
         }
 
         public static IEnumerable<RoleDto> MapToListDtoModels(this IEnumerable<Role> roles)
@@ -154,6 +174,11 @@ namespace BLLTheBookOfBusinessAccounting.Mappers
 
         public static ICollection<RoleDto> MapToCollectionDtoModels(this ICollection<Role> roles)
         {
+            if(roles == null)
+            {
+                return null;
+            }
+
             var collectionRoles = new List<RoleDto>();
             foreach (var role in roles)
             {
@@ -169,6 +194,11 @@ namespace BLLTheBookOfBusinessAccounting.Mappers
 
         public static ICollection<ImageDto> MapToCollectionDtoModels(this ICollection<Image> images)
         {
+            if(images == null)
+            {
+                return null;
+            }
+
             var collectionByImage = new List<ImageDto>();
             foreach (var image in images)
             {
@@ -196,6 +226,11 @@ namespace BLLTheBookOfBusinessAccounting.Mappers
 
         private static ICollection<UsersRole> MapToCollectionDbModels(this ICollection<RoleDto> roleDtos, int userId)
         {
+            if(roleDtos == null)
+            {
+                return null;
+            }
+
             var collectionRoles = new List<UsersRole>();
             foreach(var role in roleDtos)
             {

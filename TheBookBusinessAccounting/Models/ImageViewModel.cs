@@ -1,4 +1,6 @@
-﻿namespace TheBookBusinessAccounting.Models
+﻿using System.Collections.Generic;
+
+namespace TheBookBusinessAccounting.Models
 {
     public class ImageViewModel
     {
@@ -8,5 +10,7 @@
         public string ScreenFormat { get; set; }
 
         public int ItemId { get; set; }
+
+        public Dictionary<int,string> Items { get; set; }
     }
 }

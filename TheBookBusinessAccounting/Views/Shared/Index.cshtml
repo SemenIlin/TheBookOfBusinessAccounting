@@ -3,49 +3,54 @@
 @{
 	ViewBag.Title = "Home Page";
 }
-
-@using (Html.BeginForm("SearchItem", "User", FormMethod.Post))
-{
-	<div class="form-group">
-		<div class="col-md-10">
-			@Html.TextBox("search")
-			<input type="submit" value="Поиск" class="btn btn-default" />
-		</div>
+<div>
+	<div class="col-xs-3">
+		@Html.Action("Menu", "Navigation")
 	</div>
-}
-@using (Html.BeginForm("SearchItem", "User", FormMethod.Post))
-{
-	@*<div class="form-group">
-		<div class="col-md-10">
-			@Html.DropDownList("Статусы", Model.Statuses as IEnumerable<SelectListItem>)
-			<input type="submit" value="Поиск" class="btn btn-default" />
-		</div>
-	</div>*@
-}
-
-<div id="main">
-	<table class="table">
-		<tr>
-			<td>Предмет</td>
-		</tr>
-
-		@foreach (var item in Model.ItemViewModels)
+	<div class="col-xs-9">
+		@using (Html.BeginForm("SearchItem", "User", FormMethod.Post))
 		{
-			<tr>
-				<td>
-					@item.Title
-					@foreach (var image in item.ImageViewModels)
-					{
-						<a href="@Url.Action("GetItem","User",new { id = item.Id })" target="_blank">
-							@Html.Partial("Image", image)
-						</a>
-					}
-				</td>
-			</tr>
+			<div class="form-group">
+				<div class="col-md-10">
+					Статус: @Html.DropDownList("statusId", new SelectList(Model.Statuses, "Key", "Value") as IEnumerable<SelectListItem>, new { htmlAttributes = new { @class = "form-control" } })
+					@Html.TextBox("search")
+					<input type="submit" value="Поиск" class="btn btn-default" />
+				</div>
+			</div>
 		}
-	</table>
-	<br />
-	<div class="btn-group">
-		@Html.PageLinks(Model.PageInfo, x => Url.Action($"{Model.ActionName}", "User", new { search = Model.SearchText, page = x }))
+
+		<div id="main">
+
+			@if (User.IsInRole("Editor"))
+			{
+				<p>
+					<a href="@Url.Action("AddItem", "Editor")">Добавить</a>
+				</p>
+			}
+			<table class="table">
+				<tr>
+					<td>Предмет</td>
+				</tr>
+
+				@foreach (var item in Model.ItemViewModels)
+				{
+					<tr>
+						<td>
+							<a href="@Url.Action("GetItem","User",new { id = item.Id })" target="_blank">
+								@item.Title
+								@foreach (var image in item.ImageViewModels)
+								{
+									@Html.Partial("Partial\\Image", image)
+								}
+							</a>
+						</td>
+					</tr>
+				}
+			</table>
+			<br />
+			<div class="btn-group">
+				@Html.PageLinks(Model.PageInfo, x => Url.Action($"{Model.ActionName}", "User", new { search = Model.SearchText, statusId = Model.StatusId, page = x }))
+			</div>
+		</div>
 	</div>
 </div>

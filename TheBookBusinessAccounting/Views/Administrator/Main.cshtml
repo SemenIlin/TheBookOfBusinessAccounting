@@ -1,0 +1,45 @@
+﻿@model TheBookBusinessAccounting.Models.Pagination.MainViewModel
+@using TheBookBusinessAccounting.App_Code
+@{
+	ViewBag.Title = "Home Page";
+}
+<div class="col-xs-offset-4 col-xs-6">
+	@using (Html.BeginForm("SearchUser", "Administrator", FormMethod.Post))
+	{
+		<div class="form-group">
+			<div class="col-md-10">
+				@Html.TextBox("search")
+				<input type="submit" value="Поиск" class="btn btn-default" />
+			</div>
+		</div>
+	}
+
+	<div id="main">
+		<p>
+			@Html.ActionLink("Добаить", "CreateUser")
+		</p>
+		
+		<table class="table">
+			<tr>
+				<td>Пользователи</td>
+			</tr>
+
+			@foreach (var user in Model.UserViewModels)
+			{
+				<tr>
+					<td>
+						<a href="@Url.Action("GetUser","Administrator",new { id = user.Id })" target="_blank">
+							@Html.Partial("Partial\\GetUser", user)
+						</a>
+					</td>
+				</tr>
+			}
+		</table>
+		<br />
+		<div class="btn-group">
+			@Html.PageLinks(Model.PageInfo, x => Url.Action($"Main", "Administrator", new { search = Model.SearchText, page = x }))
+		</div>
+	</div>
+</div>
+
+

@@ -245,6 +245,34 @@ USE TheBookOfBusinessAccounting;
 --END
 
 --GO 
+--CREATE PROC AddRoleForUser
+--@Id INT,
+--@RoleId INT
+--AS BEGIN
+--    WHILE @RoleId > 0
+--	BEGIN
+--	IF NOT EXISTS(SELECT * FROM UsersRoles WHERE UserId = @Id AND RoleId = @RoleId) 
+--	   BEGIN
+--	     INSERT INTO UsersRoles(UserId, RoleId)
+--	     VALUES (@Id, @RoleId)	   
+--	   END
+--	   SET @RoleId = @RoleId - 1
+--	END
+--END
+
+--GO 
+--CREATE PROC DelRoleFromUser
+--@Id INT,
+--@RoleId INT
+--AS BEGIN
+--	IF EXISTS(SELECT * FROM UsersRoles WHERE UserId = @Id AND RoleId = @RoleId) 
+--	   BEGIN
+--	     DELETE UsersRoles
+--	     WHERE RoleId = @RoleId AND UserId = @Id	   
+--	   END	
+--END
+
+--GO 
 --CREATE PROC UpdateUser
 --@Id INT,
 --@UserName NVARCHAR(50),
@@ -305,4 +333,9 @@ USE TheBookOfBusinessAccounting;
 --   INNER JOIN Users ON Users.Id = UsersRoles.UserId
 --   WHERE Users.UserLogin = @UserLogin
 --END
+
+--DECLARE @userId int, @roleId int
+--set @userId = 1
+--set @roleId = 2
+--exec AddRoleForUser @userId, @roleId
 

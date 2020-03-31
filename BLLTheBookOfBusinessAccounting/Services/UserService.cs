@@ -24,9 +24,19 @@ namespace BLLTheBookOfBusinessAccounting.Services
             _userRepository.Create(userDto.MapToDbModel());
         }
 
+        public void AddRoleForUser(int userId, int roleId)
+        {
+            _userRepository.AddRole(userId, roleId);
+        }
+
         public void Delete(int id)
         {
             _userRepository.Delete(id);
+        }
+
+        public void DeleteRoleFromUser(int userId, int roleId)
+        {
+            _userRepository.DeleteRole(userId, roleId);
         }
 
         public UserDto Find(string login, string password)
