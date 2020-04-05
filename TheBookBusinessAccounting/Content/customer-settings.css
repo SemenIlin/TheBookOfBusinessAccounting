@@ -12,3 +12,8 @@
 .even {
 	background-color: #CBCBCB;
 }
+
+* {
+	-webkit-box-sizing: border-box;
+	box-sizing: border-box;
+}

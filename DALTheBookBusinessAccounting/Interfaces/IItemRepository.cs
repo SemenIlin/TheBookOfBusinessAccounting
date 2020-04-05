@@ -9,9 +9,10 @@ namespace DALTheBookBusinessAccounting.Interfaces
         IEnumerable<Item> GetAll();
         Item Get(int id);
 
-        IEnumerable<Item> Find(string text, int status = default, int category = default);
+        IEnumerable<Item> Find(string text, int pageSize, int skip, int status = default, string category = default);
+        IEnumerable<Item> Find(string text, int status = default, string category = default);
 
-        void Create(Item item);
+        void Create(Item item, out int id);
         void Update(Item item);
         void Delete(int id);
     }

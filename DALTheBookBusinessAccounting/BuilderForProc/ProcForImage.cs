@@ -1,5 +1,6 @@
 ﻿using DALTheBookBusinessAccounting.Entities;
 using System.Data.SqlClient;
+using System.Data;
 
 namespace DALTheBookBusinessAccounting.BuilderForProc
 {
@@ -51,6 +52,17 @@ namespace DALTheBookBusinessAccounting.BuilderForProc
             {
                 ParameterName = "@Id",
                 Value = image.Id
+            };
+            command.Parameters.Add(idParam);
+        }
+
+        public void GetId(SqlCommand command)
+        {
+            SqlParameter idParam = new SqlParameter
+            {
+                ParameterName = "@id",
+                SqlDbType = SqlDbType.Int,
+                Direction = ParameterDirection.Output
             };
             command.Parameters.Add(idParam);
         }

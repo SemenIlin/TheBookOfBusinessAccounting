@@ -2,17 +2,15 @@
 using DALTheBookBusinessAccounting.Entities;
 using DALTheBookBusinessAccounting.Interfaces;
 using System.Collections.Generic;
-using System.Configuration;
 using System.Data.SqlClient;
 
 namespace DALTheBookBusinessAccounting.Repositories
 {
-    public class CategoryRepository : IReadAndEditRepository<Category>
+    public class CategoryRepository : BaseRepository, ICategoryRepository
     {
         private const int ID = 0;
         private const int TITLE = 1;
 
-        private readonly string connectionString = ConfigurationManager.ConnectionStrings["TheBookOfBusinessAccountingContext"].ConnectionString;
         private readonly ProcForCategory _procForCategory;
 
         public CategoryRepository()

@@ -59,10 +59,12 @@ USE TheBookOfBusinessAccounting;
 --@LocationOfItem NVARCHAR(200),
 --@About NVARCHAR(500),
 --@CategoryId INT,
---@StatusId INT
+--@StatusId INT,
+--@Id INT OUTPUT
 --AS BEGIN
 --INSERT INTO Items(Title, InventoryNumber, LocationOfItem, About, CategoryId, StatusId)
 --VALUES (@Title, @InventoryNumber, @LocationOfItem, @About, @CategoryId, @StatusId)
+--SET @Id = @@IDENTITY
 --END
 
 --GO
@@ -123,10 +125,10 @@ USE TheBookOfBusinessAccounting;
 --END
 
 --GO
---CREATE PROC GetListImagesOfItem
+--alter PROC GetListImagesOfItem
 --@Id INT
 --AS BEGIN
---SELECT * FROM Images
+--SELECT Id, Screen, ScreenFormat, ItemId FROM Images
 --WHERE ItemId = @Id
 --END
 
@@ -165,10 +167,12 @@ USE TheBookOfBusinessAccounting;
 --CREATE PROC AddImage
 --@Screen IMAGE,
 --@ScreenFormat VARCHAR(5),
---@ItemId INT
+--@ItemId INT,
+--@Id INT
 --AS BEGIN
 --INSERT INTO Images(Screen, ScreenFormat, ItemId)
 --VALUES (@Screen, @ScreenFormat, @ItemId)
+--SET @Id = @@IDENTITY
 --END
 
 --GO
@@ -201,25 +205,68 @@ USE TheBookOfBusinessAccounting;
 --END
 
 --GO
---CREATE PROC FindItem
---@CategoryId INT,
+--CREATE PROC FindItems
+--@CategoryName NVARCHAR(40),
+--@StatusId INT,
+--@Name NVARCHAR(100),
+--@PageSize INT,
+--@Skip INT
+--AS BEGIN
+--	SELECT * FROM Items
+--    INNER JOIN Categories ON Categories.Id = Items.CategoryId
+--	WHERE (@StatusId = 0 OR StatusId = @StatusId)  AND
+--	      (@CategoryName = '' OR Categories.Title = @CategoryName) AND 
+--		  Items.Title LIKE @Name+'%'
+--	ORDER BY Items.Title
+--	OFFSET @PageSize * @Skip ROWS
+--    FETCH NEXT @PageSize ROWS ONLY
+--END
+
+--GO
+--CREATE PROC FindAllItems
+--@CategoryName NVARCHAR(40),
 --@StatusId INT,
 --@Name NVARCHAR(100)
 --AS BEGIN
 --	SELECT * FROM Items
---	WHERE (@StatusId = 0 OR StatusId = @StatusId) AND 
---	      (@CategoryId = 0 OR CategoryId = @CategoryId) AND
---		   Title LIKE @Name+'%'
+--    INNER JOIN Categories ON Categories.Id = Items.CategoryId
+--	WHERE (@StatusId = 0 OR StatusId = @StatusId)  AND
+--	      (@CategoryName = '' OR Categories.Title = @CategoryName) AND 
+--		  Items.Title LIKE @Name+'%'	
 --END
+
+--GO
+--CREATE PROC GetUsersForPage
+--@UserLogin NVARCHAR(50),
+--@PageSize INT,
+--@Skip INT
+--AS BEGIN
+--	SELECT * FROM Users
+--	WHERE UserLogin LIKE @UserLogin+'%'
+--	ORDER BY UserLogin
+--	OFFSET @PageSize * @Skip ROWS
+--    FETCH NEXT @PageSize ROWS ONLY
+--END
+
+--GO
+--CREATE PROC GetUsers
+--@UserLogin NVARCHAR(50)
+--AS BEGIN
+--	SELECT * FROM Users
+--	WHERE UserLogin LIKE @UserLogin+'%'	
+--END
+
 --GO
 --CREATE PROC AddUser
 --@UserLogin NVARCHAR(50),
 --@UserName  NVARCHAR(50),
 --@UserPassword NVARCHAR(50),
---@Email NVARCHAR(50)
+--@Email NVARCHAR(50),
+--@Id INT OUTPUT
 --AS BEGIN
 --INSERT INTO Users(UserLogin, UserPassword, Email, UserName)
 --VALUES (@UserLogin, @UserPassword, @Email, @UserName)
+--SET @Id = @@IDENTITY
 --END
 
 --GO
@@ -338,4 +385,3 @@ USE TheBookOfBusinessAccounting;
 --set @userId = 1
 --set @roleId = 2
 --exec AddRoleForUser @userId, @roleId
-

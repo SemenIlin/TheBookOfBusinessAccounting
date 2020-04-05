@@ -6,21 +6,21 @@ using TheBookBusinessAccounting.Infrastructure;
 
 namespace TheBookBusinessAccounting.Controllers
 {
-    //[Authorize(Roles ="User, Editor, Administrator" )]
+    [MyAuthorize(Roles ="User")]
     public class NavigationController: Controller
     {
-        private readonly IReadAndEditService<CategoryDto> _categoryReadAndEditService;
+        private readonly ICategoryService _categoryService;
 
-        public NavigationController(IReadAndEditService<CategoryDto> categoryReadAndEditService)
+        public NavigationController(ICategoryService categoryService)
         {
-            _categoryReadAndEditService = categoryReadAndEditService;
+            _categoryService = categoryService;
         }
 
         public PartialViewResult Menu(string category = null)
         {
             ViewBag.SelectedCategory = category;
 
-            var categories = _categoryReadAndEditService.GetAll()
+            var categories = _categoryService.GetAll()
                 .Select(c => c.Title)
                 .Distinct()
                 .OrderBy(x => x);

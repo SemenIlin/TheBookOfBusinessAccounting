@@ -11,11 +11,11 @@ namespace TheBookBusinessAccounting.Controllers
 {
     public class ImageController : Controller
     {
-        private readonly IReadAndEditService<ImageDto> _imageService;
+        private readonly IImageService _imageService;
         private readonly IItemService _itemService;
 
         public ImageController(
-            IReadAndEditService<ImageDto> imageService,
+            IImageService imageService,
             IItemService itemService
             )
         {
@@ -46,7 +46,7 @@ namespace TheBookBusinessAccounting.Controllers
                 imageViewModel.Screen = ImageConvert.ImageToByteArray(uploadImage);
                 imageViewModel.ScreenFormat = ImageConvert.GetImageExtension(uploadImage);            
 
-                _imageService.Add(imageViewModel.MapToDtoModel());
+                _imageService.Add(imageViewModel.MapToDtoModel(), out int imageId);
 
                 return RedirectToAction("Index");
             }

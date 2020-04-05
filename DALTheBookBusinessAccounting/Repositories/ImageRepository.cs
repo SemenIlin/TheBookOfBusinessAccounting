@@ -2,18 +2,16 @@
 using DALTheBookBusinessAccounting.Entities;
 using DALTheBookBusinessAccounting.Interfaces;
 using System.Collections.Generic;
-using System.Configuration;
 using System.Data.SqlClient;
 
 namespace DALTheBookBusinessAccounting.Repositories
 {
-    public class ImageRepository : IReadAndEditRepository<Image>
+    public class ImageRepository : BaseRepository, IImageRepository
     {
         private const int ID = 0;
         private const int SCREEN_FORMAT = 2;
         private const int ITEM_ID = 3;
 
-        private readonly string connectionString = ConfigurationManager.ConnectionStrings["TheBookOfBusinessAccountingContext"].ConnectionString;
         private readonly ProcForImage _procForImage;
 
         public ImageRepository()
@@ -21,7 +19,7 @@ namespace DALTheBookBusinessAccounting.Repositories
             _procForImage = new ProcForImage();
         }
 
-        public void Create(Image image)
+        public void Create(Image image, out int id)
         {
             const string SQL_EXPRESSION = "AddImage";
 
@@ -36,8 +34,11 @@ namespace DALTheBookBusinessAccounting.Repositories
                     _procForImage.AddScreen(command, image);
                     _procForImage.AddScreenFormat(command, image);
                     _procForImage.AddItemId(command, image);
+                    _procForImage.GetId(command);
 
                     command.ExecuteNonQuery();
+
+                    id = (int)command.Parameters["@Id"].Value;
                 }
             }
         }
@@ -113,7 +114,7 @@ namespace DALTheBookBusinessAccounting.Repositories
                     SqlDataReader reader = command.ExecuteReader();
                     if (reader.HasRows) 
                     {
-                        while (reader.Read()) // построчно считываем данные
+                        while (reader.Read()) 
                         {
                             images.Add(new Image
                             {

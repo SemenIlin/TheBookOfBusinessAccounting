@@ -2,12 +2,11 @@
 using DALTheBookBusinessAccounting.Entities;
 using DALTheBookBusinessAccounting.Interfaces;
 using System.Collections.Generic;
-using System.Configuration;
 using System.Data.SqlClient;
 
 namespace DALTheBookBusinessAccounting.Repositories
 {
-    public class ItemRepository : IItemRepository
+    public class ItemRepository : BaseRepository, IItemRepository
     {
         private const int ID = 0;
         private const int TITLE = 1;
@@ -21,7 +20,6 @@ namespace DALTheBookBusinessAccounting.Repositories
 
         private const int SCREEN_FORMAT = 2;
                 
-        private readonly string connectionString = ConfigurationManager.ConnectionStrings["TheBookOfBusinessAccountingContext"].ConnectionString;
         private readonly ProcForItem _procForItem;
 
         public ItemRepository()
@@ -29,7 +27,7 @@ namespace DALTheBookBusinessAccounting.Repositories
             _procForItem = new ProcForItem();
         }        
 
-        public void Create(Item item)
+        public void Create(Item item, out int id)
         {
             const string SQL_EXPRESSION = "AddItem";
 
@@ -47,8 +45,11 @@ namespace DALTheBookBusinessAccounting.Repositories
                     _procForItem.AddAbout(command, item);
                     _procForItem.AddCategoryId(command, item);
                     _procForItem.AddStatusId(command, item);
+                    _procForItem.GetId(command);
 
                     command.ExecuteNonQuery();
+
+                    id = (int)command.Parameters["@Id"].Value;
                 }
             }
         }
@@ -72,9 +73,9 @@ namespace DALTheBookBusinessAccounting.Repositories
             }
         }
 
-        public IEnumerable<Item> Find(string text, int status = 0, int category = 0)
+        public IEnumerable<Item> Find(string text, int pageSize, int skip, int status = 0, string category = default)
         {
-            const string SQL_EXPRESSION = "FindItem";
+            const string SQL_EXPRESSION = "FindItems";
 
             var items = new List<Item>();
             using (SqlConnection connection = new SqlConnection(connectionString))
@@ -85,30 +86,39 @@ namespace DALTheBookBusinessAccounting.Repositories
                     CommandType = System.Data.CommandType.StoredProcedure
                 })
                 {
+                    _procForItem.AddCategoryName(command, category);
+                    _procForItem.AddStatusId(command, status);
                     _procForItem.AddName(command, text);
-                    _procForItem.AddCategoryId(command, category);
-                    _procForItem.AddStatusId(command, status);                    
+                    _procForItem.AddPageSize(command, pageSize);
+                    _procForItem.AddSkip(command, skip);                   
 
                     SqlDataReader reader = command.ExecuteReader();
-                    if (reader.HasRows) 
-                    {                        
-                        while (reader.Read()) 
-                        {
-                            var item = new Item
-                            {
-                                Id = reader.GetInt32(ID),
-                                Title = reader.GetString(TITLE),
-                                InventoryNumber = reader.GetString(INVENTORY_NUMBER),
-                                LocationOfItem = reader.GetString(LOCATION_OF_ITEM),
-                                About = reader.GetString(ABOUT),
-                                CategoryId = reader.GetInt32(CATEGORY_ID),
-                                StatusId = reader.GetInt32(STATUS_ID),
-                                Images = GetCollectionImages(reader.GetInt32(ID))
-                            };
+                    items = ReadFromDB(reader);
+                }
+            }
 
-                            items.Add(item);
-                        }
-                    }
+            return items;
+        }
+
+        public IEnumerable<Item> Find(string text, int status = 0, string category = default)
+        {
+            const string SQL_EXPRESSION = "FindAllItems";
+
+            var items = new List<Item>();
+            using (SqlConnection connection = new SqlConnection(connectionString))
+            {
+                connection.Open();
+                using (SqlCommand command = new SqlCommand(SQL_EXPRESSION, connection)
+                {
+                    CommandType = System.Data.CommandType.StoredProcedure
+                })
+                {
+                    _procForItem.AddCategoryName(command, category);
+                    _procForItem.AddStatusId(command, status);
+                    _procForItem.AddName(command, text);
+
+                    SqlDataReader reader = command.ExecuteReader();
+                    items = ReadFromDB(reader);
                 }
             }
 
@@ -149,7 +159,7 @@ namespace DALTheBookBusinessAccounting.Repositories
                             item.StatusId = reader.GetInt32(STATUS_ID);
                             item.CategoryName = reader.GetString(CATEGORY_NAME);
                             item.StatusName = reader.GetString(STATUS_NAME);
-                            item.Images = GetCollectionImages(reader.GetInt32(ID));
+                            item.Images = GetCollectionImages(item.Id);
                         }
                     }
                 }
@@ -176,9 +186,10 @@ namespace DALTheBookBusinessAccounting.Repositories
                     {
                         while (reader.Read())
                         {
+                            var id = reader.GetInt32(ID);
                             items.Add(new Item
                             {
-                                Id = reader.GetInt32(ID),
+                                Id = id,
                                 Title = reader.GetString(TITLE),
                                 InventoryNumber = reader.GetString(INVENTORY_NUMBER),
                                 LocationOfItem = reader.GetString(LOCATION_OF_ITEM),
@@ -187,7 +198,7 @@ namespace DALTheBookBusinessAccounting.Repositories
                                 StatusId = reader.GetInt32(STATUS_ID),
                                 CategoryName = reader.GetString(CATEGORY_NAME),
                                 StatusName = reader.GetString(STATUS_NAME),
-                                Images = GetCollectionImages(reader.GetInt32(ID))
+                                Images = GetCollectionImages(id)
                             });
                         }
                     }
@@ -222,7 +233,7 @@ namespace DALTheBookBusinessAccounting.Repositories
             }
         }
 
-        public ICollection<Image> GetCollectionImages(int id)
+        public ICollection<Image> GetCollectionImages(int itemId)
         {
             const string SQL_EXPRESSION = "GetListImagesOfItem";
 
@@ -236,26 +247,53 @@ namespace DALTheBookBusinessAccounting.Repositories
                     CommandType = System.Data.CommandType.StoredProcedure
                 })
                 {
-                    _procForItem.AddItemId(command, id);
+                    _procForItem.AddItemId(command, itemId);
 
                     SqlDataReader reader = command.ExecuteReader();
 
                     if (reader.HasRows)
                     {
-                        var image = new Image();
-
                         while (reader.Read())
                         {
-                            image.ScreenFormat = reader.GetString(SCREEN_FORMAT);
-                            image.Screen = (byte[])reader["Screen"];
-
-                            images.Add(image);
+                            images.Add(new Image
+                            {
+                                Id = reader.GetInt32(ID),
+                                Screen = (byte[])reader["Screen"],
+                                ScreenFormat = reader.GetString(SCREEN_FORMAT),
+                                ItemId = itemId
+                            });
                         }
                     }
                 }
             }
 
             return images;
+        }
+
+        private List<Item> ReadFromDB(SqlDataReader reader)
+        {
+            var items = new List<Item>();
+            if (reader.HasRows)
+            {
+                while (reader.Read())
+                {
+                    var id = reader.GetInt32(ID);
+                    var item = new Item
+                    {
+                        Id = id,
+                        Title = reader.GetString(TITLE),
+                        InventoryNumber = reader.GetString(INVENTORY_NUMBER),
+                        LocationOfItem = reader.GetString(LOCATION_OF_ITEM),
+                        About = reader.GetString(ABOUT),
+                        CategoryId = reader.GetInt32(CATEGORY_ID),
+                        StatusId = reader.GetInt32(STATUS_ID),
+                        Images = GetCollectionImages(id)
+                    };
+
+                    items.Add(item);
+                }
+            }
+            return items;
         }
     }
 }

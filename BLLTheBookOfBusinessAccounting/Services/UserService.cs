@@ -19,9 +19,9 @@ namespace BLLTheBookOfBusinessAccounting.Services
             _roleRepository = roleRepository;
         }
 
-        public void Add(UserDto userDto)
+        public void Add(UserDto userDto,out int id)
         {
-            _userRepository.Create(userDto.MapToDbModel());
+            _userRepository.Create(userDto.MapToDbModel(), out id);
         }
 
         public void AddRoleForUser(int userId, int roleId)
@@ -42,6 +42,11 @@ namespace BLLTheBookOfBusinessAccounting.Services
         public UserDto Find(string login, string password)
         {
             var userDto = _userRepository.FindUserIsLogin(login, password).MapToDtoModel();
+            if (userDto == null)
+            {
+                return userDto;            
+            }
+
             userDto.RoleDtos = _roleRepository.GetAllRolesOfUser(userDto.UserLogin).MapToCollectionDtoModels();
 
             return userDto;
@@ -50,9 +55,24 @@ namespace BLLTheBookOfBusinessAccounting.Services
         public UserDto Find(string login)
         {
             var userDto = _userRepository.FindUser(login).MapToDtoModel();
+            if (userDto == null)
+            {
+                throw new NotFoundException("Данный пользователь не найден.", "");
+            }
+
             userDto.RoleDtos = _roleRepository.GetAllRolesOfUser(userDto.UserLogin).MapToCollectionDtoModels();
 
             return userDto;
+        }
+
+        public IEnumerable<UserDto> Find(string userLogin, int pageSize, int skip)
+        {
+            return _userRepository.Find(userLogin, pageSize, skip).MapToListDtoModels();
+        }
+
+        public IEnumerable<UserDto> FindAll(string userLogin)
+        {
+            return _userRepository.Find(userLogin).MapToListDtoModels();
         }
 
         public UserDto Get(int id)
@@ -62,7 +82,8 @@ namespace BLLTheBookOfBusinessAccounting.Services
             {
                 throw new NotFoundException("Данный пользователь не найден.","");
             }
-            var userDto = user.MapToDtoModel();
+
+            var userDto = user.MapToDtoModel();           
             userDto.RoleDtos = _roleRepository.GetAllRolesOfUser(userDto.UserLogin).MapToCollectionDtoModels();
 
             return user.MapToDtoModel();
@@ -70,7 +91,13 @@ namespace BLLTheBookOfBusinessAccounting.Services
 
         public IEnumerable<UserDto> GetAll()
         {
-            var userDtos = _userRepository.GetAll().MapToListDtoModels();
+            var users = _userRepository.GetAll();
+            if(users == null)
+            {
+                throw new NotFoundException("Пользователей не найдено.", "");
+            }
+
+            var userDtos = users.MapToListDtoModels();
             foreach(var userDto in userDtos)
             {
                 userDto.RoleDtos = _roleRepository.GetAllRolesOfUser(userDto.UserLogin).MapToCollectionDtoModels();

@@ -179,17 +179,7 @@ namespace BLLTheBookOfBusinessAccounting.Mappers
                 return null;
             }
 
-            var collectionRoles = new List<RoleDto>();
-            foreach (var role in roles)
-            {
-                collectionRoles.Add(new RoleDto()
-                {
-                    Id = role.Id,
-                    RoleName = role.RoleName
-                });
-            }
-
-            return collectionRoles;
+            return roles.Select(role => role.MapToDtoModel()).ToList();
         }
 
         public static ICollection<ImageDto> MapToCollectionDtoModels(this ICollection<Image> images)
@@ -199,13 +189,7 @@ namespace BLLTheBookOfBusinessAccounting.Mappers
                 return null;
             }
 
-            var collectionByImage = new List<ImageDto>();
-            foreach (var image in images)
-            {
-                collectionByImage.Add(image.MapToDtoModel());
-            }
-
-            return collectionByImage;
+            return images.Select(image => image.MapToDtoModel()).ToList();          
         }
 
         public static ICollection<Image> MapToCollectionDBModels(this ICollection<ImageDto> itemDtos)
@@ -215,13 +199,7 @@ namespace BLLTheBookOfBusinessAccounting.Mappers
                 return null;
             }
 
-            var collectionByImage = new List<Image>();
-            foreach (var itemDto in itemDtos)
-            {
-                collectionByImage.Add(itemDto.MapToDbModel());
-            }
-
-            return collectionByImage;
+            return itemDtos.Select(item => item.MapToDbModel()).ToList();
         }
 
         private static ICollection<UsersRole> MapToCollectionDbModels(this ICollection<RoleDto> roleDtos, int userId)

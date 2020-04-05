@@ -2,12 +2,11 @@
 using DALTheBookBusinessAccounting.Entities;
 using DALTheBookBusinessAccounting.Interfaces;
 using System.Collections.Generic;
-using System.Configuration;
 using System.Data.SqlClient;
 
 namespace DALTheBookBusinessAccounting.Repositories
 {
-    public class UserRepository : IUserRepository
+    public class UserRepository : BaseRepository, IUserRepository
     {
         private const int ID = 0;
         private const int USER_LOGIN = 1;
@@ -17,7 +16,6 @@ namespace DALTheBookBusinessAccounting.Repositories
 
         private const int ROLE_ID = 0;
 
-        private readonly string connectionString = ConfigurationManager.ConnectionStrings["TheBookOfBusinessAccountingContext"].ConnectionString;
         private readonly ProcForUser _procForUser;
 
         public UserRepository()
@@ -43,7 +41,7 @@ namespace DALTheBookBusinessAccounting.Repositories
                 }
             }
         }
-        public void Create(User user)
+        public void Create(User user, out int id)
         {
             const string SQL_EXPRESSION = "AddUser";
 
@@ -58,9 +56,12 @@ namespace DALTheBookBusinessAccounting.Repositories
                     _procForUser.AddLogin(command, user);
                     _procForUser.AddUserName(command, user);
                     _procForUser.AddPassword(command, user);
-                    _procForUser.AddEmail(command, user);                   
+                    _procForUser.AddEmail(command, user);
+                    _procForUser.GetId(command);
 
                     command.ExecuteNonQuery();
+
+                    id = (int)command.Parameters["@Id"].Value;
                 }
             }
         }
@@ -101,6 +102,54 @@ namespace DALTheBookBusinessAccounting.Repositories
                     command.ExecuteNonQuery();
                 }
             }
+        }
+
+        public IEnumerable<User> Find(string userLogin, int pageSize, int skip)
+        {
+            const string SQL_EXPRESSION = "GetUsersForPage";
+
+            var users = new List<User>();
+            using (SqlConnection connection = new SqlConnection(connectionString))
+            {
+                connection.Open();
+                using (SqlCommand command = new SqlCommand(SQL_EXPRESSION, connection)
+                {
+                    CommandType = System.Data.CommandType.StoredProcedure
+                })
+                {
+                    _procForUser.AddLogin(command, userLogin);
+                    _procForUser.AddPageSize(command, pageSize);
+                    _procForUser.AddSkip(command, skip);
+
+                    SqlDataReader reader = command.ExecuteReader();
+                    users = GetUsers(reader);
+                }
+            }
+
+            return users;
+        }
+
+        public IEnumerable<User> Find(string userLogin)
+        {
+            const string SQL_EXPRESSION = "GetUsers";
+
+            var users = new List<User>();
+            using (SqlConnection connection = new SqlConnection(connectionString))
+            {
+                connection.Open();
+                using (SqlCommand command = new SqlCommand(SQL_EXPRESSION, connection)
+                {
+                    CommandType = System.Data.CommandType.StoredProcedure
+                })
+                {
+                    _procForUser.AddLogin(command, userLogin);
+
+                    SqlDataReader reader = command.ExecuteReader();
+                    users = GetUsers(reader);                  
+                }
+            }
+
+            return users;
         }
 
         public User FindUser(string login)
@@ -196,21 +245,7 @@ namespace DALTheBookBusinessAccounting.Repositories
                 })
                 {
                     SqlDataReader reader = command.ExecuteReader();
-                    if (reader.HasRows) 
-                    {
-                        while (reader.Read()) 
-                        {
-                            users.Add(new User
-                            {
-                                Id = reader.GetInt32(ID),
-                                UserLogin = reader.GetString(USER_LOGIN),
-                                UserPassword = reader.GetString(USER_PASSWORD),
-                                UserName = reader.GetString(USER_NAME),
-                                Email = reader.GetString(EMAIL),
-                                UsersRoles = GetCollectionRoles(reader.GetInt32(ID))
-                            }) ;
-                        }
-                    }
+                    users = GetUsers(reader);
                 }
             }
 
@@ -293,6 +328,28 @@ namespace DALTheBookBusinessAccounting.Repositories
             }
 
             return user;
+        }
+
+        private List<User> GetUsers(SqlDataReader reader)
+        {
+            var users = new List<User>();
+            if (reader.HasRows)
+            {
+                while (reader.Read())
+                {
+                    users.Add(new User
+                    {
+                        Id = reader.GetInt32(ID),
+                        UserLogin = reader.GetString(USER_LOGIN),
+                        UserPassword = reader.GetString(USER_PASSWORD),
+                        UserName = reader.GetString(USER_NAME),
+                        Email = reader.GetString(EMAIL),
+                        UsersRoles = GetCollectionRoles(reader.GetInt32(ID))
+                    });
+                }
+            }
+
+            return users;
         }
     }
 }

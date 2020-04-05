@@ -2,18 +2,16 @@
 using DALTheBookBusinessAccounting.Entities;
 using DALTheBookBusinessAccounting.Interfaces;
 using System.Collections.Generic;
-using System.Configuration;
 using System.Data.SqlClient;
 
 namespace DALTheBookBusinessAccounting.Repositories
 {
-    public class RoleRepository : IRoleRepository
+    public class RoleRepository : BaseRepository, IRoleRepository
     {
         private const int ID = 0;
         private const int ROLE = 1;
 
-        private readonly string connectionString = ConfigurationManager.ConnectionStrings["TheBookOfBusinessAccountingContext"].ConnectionString;
-        private readonly ProcForRole _procForRole;
+       private readonly ProcForRole _procForRole;
 
         public  RoleRepository()
         {

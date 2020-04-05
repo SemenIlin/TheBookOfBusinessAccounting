@@ -144,13 +144,7 @@ namespace TheBookBusinessAccounting.Extensions
                 return null;
             }
 
-            var imageDto = new List<ImageDto>();
-            foreach (var imageViewModel in imageViewModels)
-            {
-                imageDto.Add(imageViewModel.MapToDtoModel());
-            }
-
-            return imageDto;
+            return imageViewModels.Select(image => image.MapToDtoModel()).ToList();
         }
 
         public static ICollection<ImageViewModel> MapToCollectionViewModels(this ICollection<ImageDto> imageDtos)
@@ -160,13 +154,7 @@ namespace TheBookBusinessAccounting.Extensions
                 return null;
             }
 
-            var imageViewModel = new List<ImageViewModel>();
-            foreach (var imageDto in imageDtos)
-            {
-                imageViewModel.Add(imageDto.MapToViewModel());
-            }
-
-            return imageViewModel;
+            return imageDtos.Select(image => image.MapToViewModel()).ToList();
         }
 
         public static UserViewModel MapToViewModel(this UserDto userDto)
@@ -211,17 +199,7 @@ namespace TheBookBusinessAccounting.Extensions
                 return null;
             }
 
-            var roleDtos = new List<RoleDto>();
-            foreach (var roleViewModel in roleViewModels)
-            {
-                roleDtos.Add(new RoleDto()
-                {
-                    Id = roleViewModel.Id,
-                    RoleName = roleViewModel.RoleName
-                });
-            };
-
-            return roleDtos;
+            return roleViewModels.Select(roleViewModel => roleViewModel.MapToDtoModel()).ToList();
         }
 
         public static ICollection<RoleViewModel> MapToCollectionViewModels(this ICollection<RoleDto> roleDtos)
@@ -231,17 +209,25 @@ namespace TheBookBusinessAccounting.Extensions
                 return null;
             }
 
-            var roleViewModels = new List<RoleViewModel>();
-            foreach (var roleDto in roleDtos)
-            {
-                roleViewModels.Add(new RoleViewModel()
-                {
-                    Id = roleDto.Id,
-                    RoleName = roleDto.RoleName
-                });
-            };
+            return roleDtos.Select(roleDto => roleDto.MapToViewModel()).ToList();
+        }
 
-            return roleViewModels;
-        }   
-    }
+        private static RoleViewModel MapToViewModel(this RoleDto roleDto)
+        {
+            return new RoleViewModel()
+            {
+                Id = roleDto.Id,
+                RoleName = roleDto.RoleName
+            };
+        }
+
+        private static RoleDto MapToDtoModel(this RoleViewModel roleViewModel)
+        {
+            return new RoleDto()
+            {
+                Id = roleViewModel.Id,
+                RoleName = roleViewModel.RoleName
+            };
+        }
+    }   
 }

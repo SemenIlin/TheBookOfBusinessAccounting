@@ -7,30 +7,39 @@ using TheBookBusinessAccounting.Extensions;
 using TheBookBusinessAccounting.Models;
 using System.Collections.Generic;
 using System.Linq;
+using Common.Exceptions;
 
 namespace TheBookBusinessAccounting.Controllers
 {
-    //[Authorize(Roles = "Editor, Administrator")]
+    [MyAuthorize(Roles = "Editor")]
     public class EditorController : Controller
     {
         private readonly IUserService _userService;
         private readonly IItemService _itemService;
         private readonly IStatusService _statusService;
-        private readonly IReadAndEditService<CategoryDto> _categoryService;
-        private readonly IReadAndEditService<ImageDto> _imageService;
+        private readonly ICategoryService _categoryService;
+        private readonly IImageService _imageService;
+
+        private readonly Cache<ItemDto> _itemCache;
+        private readonly Cache<UserDto> _userCache;
+        private readonly Cache<ImageDto> _imageCache;
 
         public EditorController(
             IUserService userService,
             IItemService itemService,
             IStatusService statusService,
-            IReadAndEditService<CategoryDto> categoryService,
-            IReadAndEditService<ImageDto> imageService)
+            ICategoryService categoryService,
+            IImageService imageService)
         {
             _itemService = itemService;
             _statusService = statusService;
             _categoryService = categoryService;
             _imageService = imageService;
             _userService = userService;
+
+            _itemCache = new Cache<ItemDto>();
+            _userCache = new Cache<UserDto>();
+            _imageCache = new Cache<ImageDto>();
         }
 
         [HttpGet]
@@ -49,35 +58,46 @@ namespace TheBookBusinessAccounting.Controllers
         [ValidateAntiForgeryToken]
         public ActionResult AddItem(ItemViewModel itemViewModel, HttpPostedFileBase uploadImage)
         {
-            itemViewModel.ImageViewModels = _itemService.GetCollectionImages(itemViewModel.Id).MapToCollectionViewModels();
-          
-                
-            if (ModelState.IsValid)
+            try
             {
-                _itemService.Add(itemViewModel.MapToDtoModel());
+                itemViewModel.ImageViewModels = _itemService.GetCollectionImages(itemViewModel.Id).MapToCollectionViewModels();
 
-                var id = _userService.GetAll().LastOrDefault().Id;
-                if (uploadImage != null)
+                if (ModelState.IsValid)
                 {
-                    itemViewModel.Screen = ImageConvert.ImageToByteArray(uploadImage);
-                    itemViewModel.ScreenFormat = ImageConvert.GetImageExtension(uploadImage);
+                    var itemDto = itemViewModel.MapToDtoModel();
+                    _itemService.Add(itemDto, out int id);
+                    _itemCache.Add(itemDto, id);
 
-                    var imageVM = new ImageViewModel()
+                    if (uploadImage != null)
                     {
-                        Screen = itemViewModel.Screen,
-                        ScreenFormat = itemViewModel.ScreenFormat,
-                        ItemId = id
-                    };
-                    _imageService.Add(imageVM.MapToDtoModel());
+                        itemViewModel.Screen = ImageConvert.ImageToByteArray(uploadImage);
+                        itemViewModel.ScreenFormat = ImageConvert.GetImageExtension(uploadImage);
+
+                        var imageVM = new ImageViewModel()
+                        {
+                            Screen = itemViewModel.Screen,
+                            ScreenFormat = itemViewModel.ScreenFormat,
+                            ItemId = id
+                        };
+
+                        var imageDto = imageVM.MapToDtoModel();
+                        _imageService.Add(imageDto, out int imageId);
+                        _imageCache.Add(imageDto, imageId);
+                    }
+
+                    return RedirectToAction("Index", "User");
                 }
 
-                return RedirectToAction("Index", "User");
+                itemViewModel.Statuses = DictionaryOfStatuses();
+                itemViewModel.Categories = DictionaryOfCategories();
+
+                return View(itemViewModel);
             }
-
-            itemViewModel.Statuses = DictionaryOfStatuses();
-            itemViewModel.Categories = DictionaryOfCategories();
-
-            return View(itemViewModel);
+            catch(NotFoundException exception)
+            {
+                ViewBag.ErrorMessage = exception.Message;
+                return View("Error");
+            }
         }
 
         [HttpGet]
@@ -85,51 +105,73 @@ namespace TheBookBusinessAccounting.Controllers
         {
             if (id == null)
             {
-                return HttpNotFound();
+                return View("NotFound");
             }
-
-            var itemDto = _itemService.Get(id.Value);
-            if (itemDto == null)
+            try
             {
-                return HttpNotFound();
+                var itemDto = _itemCache.GetValue(id.Value);
+                if(itemDto == null)
+                {
+                    itemDto = _itemService.Get(id.Value);
+                    _itemCache.Add(itemDto, itemDto.Id);
+                }
+
+                if (itemDto == null)
+                {
+                    return View("NotFound");
+                }
+
+                var itemViewModel = itemDto.MapToViewModel();
+                itemViewModel.Categories = DictionaryOfCategories();
+                itemViewModel.Statuses = DictionaryOfStatuses();
+
+                return View(itemViewModel);
             }
-
-            var itemViewModel = itemDto.MapToViewModel();
-            itemViewModel.Categories = DictionaryOfCategories();
-            itemViewModel.Statuses = DictionaryOfStatuses();            
-
-            return View(itemViewModel);
+            catch(NotFoundException exception)
+            {
+                ViewBag.ErrorMessage = exception.Message;
+                return View("Error");
+            }
         }
 
         [HttpPost]
         public ActionResult EditItem(ItemViewModel itemViewModel, HttpPostedFileBase uploadImage)
         {
-            itemViewModel.ImageViewModels = _itemService.GetCollectionImages(itemViewModel.Id).MapToCollectionViewModels() ;
-            if (ModelState.IsValid)
-            {                
-                if(uploadImage != null)
+            try
+            {
+                itemViewModel.ImageViewModels = _itemService.GetCollectionImages(itemViewModel.Id).MapToCollectionViewModels();
+                if (ModelState.IsValid)
                 {
-                    itemViewModel.Screen = ImageConvert.ImageToByteArray(uploadImage);
-                    itemViewModel.ScreenFormat = ImageConvert.GetImageExtension(uploadImage);
-
-                    var imageVM = new ImageViewModel()
+                    if (uploadImage != null)
                     {
-                        Screen = itemViewModel.Screen,
-                        ScreenFormat = itemViewModel.ScreenFormat,
-                        ItemId = itemViewModel.Id
-                    };
-                    _imageService.Add(imageVM.MapToDtoModel());
+                        itemViewModel.Screen = ImageConvert.ImageToByteArray(uploadImage);
+                        itemViewModel.ScreenFormat = ImageConvert.GetImageExtension(uploadImage);
+
+                        var imageVM = new ImageViewModel()
+                        {
+                            Screen = itemViewModel.Screen,
+                            ScreenFormat = itemViewModel.ScreenFormat,
+                            ItemId = itemViewModel.Id
+                        };
+                        _imageService.Add(imageVM.MapToDtoModel(), out int imageId);
+                        _imageCache.Add(imageVM.MapToDtoModel(), imageId);
+                    }
+
+                    _itemService.Update(itemViewModel.MapToDtoModel());
+
+                    return RedirectToAction("Index", "User");
                 }
-                
-                _itemService.Update(itemViewModel.MapToDtoModel());
 
-                return RedirectToAction("Index", "User");
+                itemViewModel.Statuses = DictionaryOfStatuses();
+                itemViewModel.Categories = DictionaryOfCategories();
+
+                return View(itemViewModel);
             }
-
-            itemViewModel.Statuses = DictionaryOfStatuses();
-            itemViewModel.Categories = DictionaryOfCategories();
-
-            return View(itemViewModel);
+            catch(NotFoundException exception)
+            {
+                ViewBag.ErrorMessage = exception.Message;
+                return View("Error");
+            }
         }
 
         [HttpGet]
@@ -137,16 +179,29 @@ namespace TheBookBusinessAccounting.Controllers
         {
             if (id == null)
             {
-                return HttpNotFound();
+                return View("NotFound");
             }
-
-            var itemDto = _itemService.Get(id.Value);
-            if (itemDto == null)
+            try
             {
-                return HttpNotFound();
-            }
+                var itemDto = _itemCache.GetValue(id.Value);
+                if(itemDto == null)
+                {
+                    itemDto = _itemService.Get(id.Value);
+                    _itemCache.Add(itemDto, itemDto.Id);
+                }
+                
+                if (itemDto == null)
+                {
+                    return View("NotFound");
+                }
 
-            return View(itemDto.MapToViewModel());
+                return View(itemDto.MapToViewModel());
+            }
+            catch(NotFoundException exception)
+            {
+                ViewBag.ErrorMessage = exception.Message;
+                return View("Error");
+            }
         }
 
         [HttpPost]
@@ -155,49 +210,103 @@ namespace TheBookBusinessAccounting.Controllers
         {
             if (id == null)
             {
-                return HttpNotFound();
+                return View("NotFound");
             }
-
-            var itemDto = _itemService.Get(id.Value);
-            if (itemDto == null)
+            try
             {
-                return HttpNotFound();
+                var itemDto = _itemCache.GetValue(id.Value);
+                if(itemDto == null)
+                {
+                    itemDto = _itemService.Get(id.Value);
+                }
+                
+                if (itemDto == null)
+                {
+                    return View("NotFound");
+                }
+
+                _itemService.Delete(id.Value);
+                _itemCache.Delete(id.Value);
+
+                return RedirectToAction("Index", "User");
             }
-
-            _itemService.Delete(id.Value);
-
-            return RedirectToAction("Index", "User");
+            catch(NotFoundException exception)
+            {
+                ViewBag.ErrorMessage = exception.Message;
+                return View("Error");
+            }
         }
 
         [HttpPost]
-        public ActionResult DeleteImage(int? id)
+        public ActionResult DeleteImage(int? id, int? itemId)
         {
-            if (id == null)
+            if ((id == null) || (itemId == null))
             {
-                return HttpNotFound();
+                return View("NotFound");
             }
-
-            var imageDto = _imageService.Get(id.Value);
-            if (imageDto == null)
+            try
             {
-                return HttpNotFound();
-            }
+                var imageDto = _imageCache.GetValue(id.Value);
+                if(imageDto == null)
+                {
+                    imageDto = _imageService.Get(id.Value);
+                }
 
-            _imageService.Delete(id.Value);
-            return RedirectToAction("Index");
+                if (imageDto == null)
+                {
+                    return View("NotFound");
+                }
+                _imageService.Delete(id.Value);
+                _imageCache.Delete(id.Value);
+
+                var itemDto = _itemCache.GetValue(itemId.Value);
+                if (itemDto == null)
+                {
+                    itemDto = _itemService.Get(itemId.Value);
+                    _itemCache.Add(itemDto, itemDto.Id);
+                }
+
+                if (itemDto == null)
+                {
+                    return View("NotFound");
+                }
+
+                itemDto = _itemService.Get(itemId.Value);
+                _itemCache.Update(itemDto, itemDto.Id);
+
+                return RedirectToAction("GetItem", "User", itemDto.MapToViewModel());
+            }
+            catch(NotFoundException exception)
+            {
+                ViewBag.ErrorMessage = exception.Message;
+                return View("Error");
+            }
         }
 
         [HttpGet]
         public ActionResult EditUser()
         {
-            var userViewModel = _userService.Find(User.Identity.Name).MapToViewModel();
-
-            if (userViewModel == null)
+            try
             {
-                return HttpNotFound();
-            }
+                var userDto = _userCache.GetValue(User.Identity.Name);
+                if(userDto == null)
+                {
+                    userDto = _userService.Find(User.Identity.Name);
+                    _userCache.Add(userDto, userDto.Id);
+                }
 
-            return View(userViewModel);
+                if (userDto == null)
+                {
+                    return View("NotFound");
+                }
+
+                return View(userDto.MapToViewModel());
+            }
+            catch(NotFoundException exception)
+            {
+                ViewBag.ErrorMessage = exception.Message;
+                return View("Error");
+            }
         }
 
         [HttpPost]
@@ -206,37 +315,22 @@ namespace TheBookBusinessAccounting.Controllers
             if (ModelState.IsValid)
             {
                 _userService.Update(userViewModel.MapToDtoModel());
+                _userCache.Update(userViewModel.MapToDtoModel(), userViewModel.Id);
 
-                return RedirectToAction("Index");
+                return RedirectToAction("Index", "User");
             }
 
             return View(userViewModel);
         }
 
-        [NonAction]
         private Dictionary<int,string> DictionaryOfStatuses()
         {
-            var statuses = _statusService.GetAll();
-            var dictionaryOfStatuses = new Dictionary<int, string>();
-            foreach(var status in statuses)
-            {
-                dictionaryOfStatuses.Add(status.Id, status.Title);
-            }
-
-            return dictionaryOfStatuses;
+            return  _statusService.GetAll().ToDictionary(status => status.Id, status => status.Title);            
         }
 
-        [NonAction]
         private Dictionary<int, string> DictionaryOfCategories()
         {
-            var categories = _categoryService.GetAll();
-            var dictionaryOfCategories = new Dictionary<int, string>();
-            foreach (var category in categories)
-            {
-                dictionaryOfCategories.Add(category.Id, category.Title);
-            }
-
-            return dictionaryOfCategories;
+            return  _categoryService.GetAll().ToDictionary(category=>category.Id, category => category.Title);          
         }        
     }
 }

@@ -2,34 +2,33 @@
 using BLLTheBookOfBusinessAccounting.Mappers;
 using BLLTheBookOfBusinessAccounting.ModelsDto;
 using Common.Exceptions;
-using DALTheBookBusinessAccounting.Entities;
 using DALTheBookBusinessAccounting.Interfaces;
 using System.Collections.Generic;
 
 namespace BLLTheBookOfBusinessAccounting.Services
 {
-    public class ImageService : IReadAndEditService<ImageDto>
+    public class ImageService : IImageService
     {
-        private readonly IReadAndEditRepository<Image> _readAndEditRepository;
+        private readonly IImageRepository _imageRepository;
 
-        public ImageService(IReadAndEditRepository<Image> readAndEditRepository)
+        public ImageService(IImageRepository imageRepository)
         {
-            _readAndEditRepository = readAndEditRepository;
+            _imageRepository = imageRepository;
         }
 
-        public void Add(ImageDto imageDto)
+        public void Add(ImageDto imageDto, out int id)
         {
-            _readAndEditRepository.Create(imageDto.MapToDbModel());
+            _imageRepository.Create(imageDto.MapToDbModel(), out id);
         }
 
         public void Delete(int id)
         {
-            _readAndEditRepository.Delete(id);
+            _imageRepository.Delete(id);
         }
 
         public ImageDto Get(int id)
         {
-            var image = _readAndEditRepository.Get(id);
+            var image = _imageRepository.Get(id);
             if(image == null)
             {
                 throw new NotFoundException("Изображения нет.", "");
@@ -40,12 +39,12 @@ namespace BLLTheBookOfBusinessAccounting.Services
 
         public IEnumerable<ImageDto> GetAll()
         {
-            return _readAndEditRepository.GetAll().MapToListDtoModels();
+            return _imageRepository.GetAll().MapToListDtoModels();
         }
 
         public void Update(ImageDto imageDto)
         {
-            _readAndEditRepository.Update(imageDto.MapToDbModel());
+            _imageRepository.Update(imageDto.MapToDbModel());
         }
     }
 }

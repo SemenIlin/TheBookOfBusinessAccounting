@@ -5,100 +5,99 @@
 }
 
 <h2>Редактирование предмета</h2>
-
-@using (Html.BeginForm( "EditItem", "Editor", FormMethod.Post, new { enctype = "multipart/form-data" }))
-{
-    @Html.AntiForgeryToken()
-    
-<div class="form-horizontal">
-	@Html.ValidationSummary(true, "", new { @class = "text-danger" })
-	@Html.HiddenFor(model => model.Id)
-
-	<div class="form-group">
-		@Html.LabelFor(model => model.Title, htmlAttributes: new { @class = "control-label col-md-2" })
-		<div class="col-md-10">
-			@Html.EditorFor(model => model.Title, new { htmlAttributes = new { @class = "form-control" } })
-			@Html.ValidationMessageFor(model => model.Title, "", new { @class = "text-danger" })
-		</div>
-	</div>
-
-	<div class="form-group">
-		@Html.LabelFor(model => model.InventoryNumber, htmlAttributes: new { @class = "control-label col-md-2" })
-		<div class="col-md-10">
-			@Html.EditorFor(model => model.InventoryNumber, new { htmlAttributes = new { @class = "form-control" } })
-			@Html.ValidationMessageFor(model => model.InventoryNumber, "", new { @class = "text-danger" })
-		</div>
-	</div>
-
-	<div class="form-group">
-		@Html.LabelFor(model => model.LocationOfItem, htmlAttributes: new { @class = "control-label col-md-2" })
-		<div class="col-md-10">
-			@Html.EditorFor(model => model.LocationOfItem, new { htmlAttributes = new { @class = "form-control" } })
-			@Html.ValidationMessageFor(model => model.LocationOfItem, "", new { @class = "text-danger" })
-		</div>
-	</div>
-
-	<div class="form-group">
-		@Html.LabelFor(model => model.About, htmlAttributes: new { @class = "control-label col-md-2" })
-		<div class="col-md-10">
-			@Html.EditorFor(model => model.About, new { htmlAttributes = new { @class = "form-control" } })
-			@Html.ValidationMessageFor(model => model.About, "", new { @class = "text-danger" })
-		</div>
-	</div>
-
-	<div class="form-group">
-		@Html.LabelFor(model => model.CategoryId, htmlAttributes: new { @class = "control-label col-md-2" })
-		<div class="col-md-10">
-			@Html.DropDownListFor(model => model.CategoryId, new SelectList(Model.Categories, "Key", "Value") as IEnumerable<SelectListItem>, new { htmlAttributes = new { @class = "form-control" } })
-			@Html.ValidationMessageFor(model => model.CategoryId, "", new { @class = "text-danger" })
-		</div>
-	</div>
-
-	<div class="form-group">
-		@Html.LabelFor(model => model.StatusId, htmlAttributes: new { @class = "control-label col-md-2" })
-		<div class="col-md-10">
-			@Html.DropDownListFor(model => model.StatusId, new SelectList(Model.Statuses, "Key", "Value") as IEnumerable<SelectListItem>, new { htmlAttributes = new { @class = "form-control" } })
-			@Html.ValidationMessageFor(model => model.StatusId, "", new { @class = "text-danger" })
-		</div>
-	</div>
-
-	<div class="form-group">
+<div class="col-xs-offset-2">
+	<div>
+		@using (Html.BeginForm("EditItem", "Editor", FormMethod.Post, new { enctype = "multipart/form-data" }))
+	    {
+	    	@Html.AntiForgeryToken()
+	    
+	    	<div class="form-horizontal">
+	    		@Html.ValidationSummary(true, "", new { @class = "text-danger" })
+	    		@Html.HiddenFor(model => model.Id)
+	    
+	    		<div class="form-group">
+	    			@Html.LabelFor(model => model.Title, htmlAttributes: new { @class = "control-label col-md-2" })
+	    			<div class="col-md-10">
+	    				@Html.EditorFor(model => model.Title, new { htmlAttributes = new { @class = "form-control" } })
+	    				@Html.ValidationMessageFor(model => model.Title, "", new { @class = "text-danger" })
+	    			</div>
+	    		</div>
+	    
+	    		<div class="form-group">
+	    			@Html.LabelFor(model => model.InventoryNumber, htmlAttributes: new { @class = "control-label col-md-2" })
+	    			<div class="col-md-10">
+	    				@Html.EditorFor(model => model.InventoryNumber, new { htmlAttributes = new { @class = "form-control" } })
+	    				@Html.ValidationMessageFor(model => model.InventoryNumber, "", new { @class = "text-danger" })
+	    			</div>
+	    		</div>
+	    
+	    		<div class="form-group">
+	    			@Html.LabelFor(model => model.LocationOfItem, htmlAttributes: new { @class = "control-label col-md-2" })
+	    			<div class="col-md-10">
+	    				@Html.EditorFor(model => model.LocationOfItem, new { htmlAttributes = new { @class = "form-control" } })
+	    				@Html.ValidationMessageFor(model => model.LocationOfItem, "", new { @class = "text-danger" })
+	    			</div>
+	    		</div>
+	    
+	    		<div class="form-group">
+	    			@Html.LabelFor(model => model.About, htmlAttributes: new { @class = "control-label col-md-2" })
+	    			<div class="col-md-10">
+	    				@Html.TextAreaFor(model => model.About, new { htmlAttributes = new { @class = "form-control" } })
+	    				@Html.ValidationMessageFor(model => model.About, "", new { @class = "text-danger" })
+	    			</div>
+	    		</div>
+	    
+	    		<div class="form-group">
+	    			@Html.LabelFor(model => model.CategoryId, htmlAttributes: new { @class = "control-label col-md-2" })
+	    			<div class="col-md-10">
+	    				@Html.DropDownListFor(model => model.CategoryId, new SelectList(Model.Categories, "Key", "Value") as IEnumerable<SelectListItem>, new { htmlAttributes = new { @class = "form-control" } })
+	    				@Html.ValidationMessageFor(model => model.CategoryId, "", new { @class = "text-danger" })
+	    			</div>
+	    		</div>
+	    
+	    		<div class="form-group">
+	    			@Html.LabelFor(model => model.StatusId, htmlAttributes: new { @class = "control-label col-md-2" })
+	    			<div class="col-md-10">
+	    				@Html.DropDownListFor(model => model.StatusId, new SelectList(Model.Statuses, "Key", "Value") as IEnumerable<SelectListItem>, new { htmlAttributes = new { @class = "form-control" } })
+	    				@Html.ValidationMessageFor(model => model.StatusId, "", new { @class = "text-danger" })
+	    			</div>
+	    		</div>
+	    
+	    		<div class="form-group">
+	    			<p class="col-md-2">Изображение </p>
+	    			<div class="col-md-10">
+	    				<input type='file' name='uploadImage' />
+	    			</div>
+	    		</div>
+	    
+	    
+	    		<div class="form-group">
+	    			<div class="col-md-offset-2 col-md-10">
+	    				<input type="submit" value="Сохранить" class="btn btn-default" />
+	    			</div>
+	    		</div>
+	    	</div>
+	    }
+		
 		@foreach (var image in Model.ImageViewModels)
+	    {
+	<div class="col-md-offset-2 col-md-10">
+		@Html.Raw("<img style='width:200px; height:200px;' src=\"data:image/jpeg;base64,"
+								+ Convert.ToBase64String(image.Screen) + "\" />")
+
+		@using (Html.BeginForm("DeleteImage", "Editor", FormMethod.Post))
 		{
-			<div class="col-md-2">
-				@Html.DisplayNameFor(model => model.ImageViewModels)
-			</div>
-
-			<div class="col-md-10">
-				@Html.Raw("<img style='width:200px; height:200px;' src=\"data:image/jpeg;base64,"
-										 + Convert.ToBase64String(image.Screen) + "\" />")
-
-				@using (Html.BeginForm("DeleteImage", "Editor", FormMethod.Post, new { id = image.Id }))
-				{
-					<input type="submit" value="Удалить" class="btn btn-default" />
-				}
-
-			</div>
+			<input type="hidden" name="id" value="@image.Id" />
+			<input type="hidden" name="itemId" value="@image.ItemId" />
+			<input type="submit" value="Удалить" class="btn btn-default" />
 		}
-		@Html.ValidationMessageFor(model => model.ImageViewModels, "", new { @class = "text-danger" })
 	</div>
-
-	<div class="form-group">
-		<p class="col-md-2">Изображение </p>
-		<div class="col-md-10">
-			<input type='file' name='uploadImage' />
-		</div>
+	    }
+	    @Html.ValidationMessageFor(model => model.ImageViewModels, "", new { @class = "text-danger" })
 	</div>
-
-
-	<div class="form-group">
-		<div class="col-md-offset-2 col-md-10">
-			<input type="submit" value="Сохранить" class="btn btn-default" />
-		</div>
+	<div>
+		<p>
+			<a href="@Url.Action("Index", "User")">Назад</a>
+		</p>
 	</div>
 </div>
-	}
-
-	<div>
-		@Html.ActionLink("Назад", "Index")
-	</div>

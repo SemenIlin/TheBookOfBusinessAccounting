@@ -4,7 +4,7 @@
     ViewBag.Title = "DeleteItem";
 }
 <h3>Удалить предмет?</h3>
-<div>
+<div class="col-xs-offset-3">
 	<dl class="dl-horizontal">
 		<dt>
 			@Html.DisplayNameFor(model => model.Title)
@@ -70,9 +70,11 @@
     @using (Html.BeginForm()) {
         @Html.AntiForgeryToken()
 
-        <div class="form-actions no-color">
-            <input type="submit" value="Удалить" class="btn btn-default" /> |
-            @Html.ActionLink("Назад", "Index")
-        </div>
+<div class="form-actions no-color">
+	<input type="submit" value="Удалить" class="btn btn-default" /> |
+	<p>
+		<a href="@Url.Action("Index", "User")">Назад</a>
+	</p>
+</div>
     }
 </div>

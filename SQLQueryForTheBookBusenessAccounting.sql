@@ -315,10 +315,11 @@ USE TheBookOfBusinessAccounting;
 --по горизонтали, вертикали и под углом 45 градусов. Точность измерений – 1 мм м (0,057 градуса).', 7, 1);
 
 --CREATE TABLE Images (
---	Id BIGINT NOT NULL PRIMARY KEY IDENTITY,
+--	Id INT NOT NULL PRIMARY KEY IDENTITY,
 --	Screen IMAGE DEFAULT (0x),
 --	ScreenFormat VARCHAR(5) DEFAULT NULL,
 --	ItemId INT, 
 --	FOREIGN KEY (ItemId) REFERENCES Items(Id) ON DELETE CASCADE
 --);
+
 

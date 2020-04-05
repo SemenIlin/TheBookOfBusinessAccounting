@@ -1,5 +1,6 @@
 ﻿using DALTheBookBusinessAccounting.Entities;
 using System.Data.SqlClient;
+using System.Data;
 
 namespace DALTheBookBusinessAccounting.BuilderForProc
 {
@@ -101,6 +102,39 @@ namespace DALTheBookBusinessAccounting.BuilderForProc
             {
                 ParameterName = "@Id",
                 Value = user.Id
+            };
+            command.Parameters.Add(idParam);
+        }
+
+        public void AddPageSize(SqlCommand command, int pageSize)
+        {
+            SqlParameter pageSizeParam = new SqlParameter
+            {
+                ParameterName = "@PageSize",
+                Value = pageSize
+            };
+
+            command.Parameters.Add(pageSizeParam);
+        }
+
+        public void AddSkip(SqlCommand command, int skip)
+        {
+            SqlParameter skipParam = new SqlParameter
+            {
+                ParameterName = "@Skip",
+                Value = skip
+            };
+
+            command.Parameters.Add(skipParam);
+        }
+
+        public void GetId(SqlCommand command)
+        {
+            SqlParameter idParam = new SqlParameter
+            {
+                ParameterName = "@id",
+                SqlDbType = SqlDbType.Int,
+                Direction = ParameterDirection.Output 
             };
             command.Parameters.Add(idParam);
         }

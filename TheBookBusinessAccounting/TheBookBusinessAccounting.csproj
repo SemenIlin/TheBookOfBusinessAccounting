@@ -64,6 +64,7 @@
       <HintPath>..\packages\System.Data.SqlClient.4.8.1\lib\net461\System.Data.SqlClient.dll</HintPath>
     </Reference>
     <Reference Include="System.Drawing" />
+    <Reference Include="System.Runtime.Caching" />
     <Reference Include="System.Web.DynamicData" />
     <Reference Include="System.Web.Entity" />
     <Reference Include="System.Web.ApplicationServices" />
@@ -147,6 +148,7 @@
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
+    <Compile Include="Infrastructure\Cache.cs" />
     <Compile Include="Infrastructure\ImageConvert.cs" />
     <Compile Include="Infrastructure\MyAuthorizeAttribute.cs" />
     <Compile Include="Infrastructure\NinjectRegistrations.cs" />
@@ -156,12 +158,14 @@
     <Compile Include="Models\ItemViewModel.cs" />
     <Compile Include="Models\LoginAndRegistration\LoginModel.cs" />
     <Compile Include="Models\LoginAndRegistration\RegisterModel.cs" />
+    <Compile Include="Models\LoginAndRegistration\SerializeModel.cs" />
     <Compile Include="Models\Pagination\IndexViewModel.cs" />
     <Compile Include="Models\Pagination\MainViewModel.cs" />
     <Compile Include="Models\Pagination\PageInfo.cs" />
     <Compile Include="Models\RoleViewModel.cs" />
     <Compile Include="Models\StatusViewModel.cs" />
     <Compile Include="Models\UserViewModel.cs" />
+    <Compile Include="Principals\UserPrincipal.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
@@ -170,6 +174,7 @@
     <Content Include="Content\bootstrap.css" />
     <Content Include="Content\bootstrap.min.css" />
     <Content Include="Content\customer-settings.css" />
+    <Content Include="Content\error.css" />
     <Content Include="favicon.ico" />
     <Content Include="fonts\glyphicons-halflings-regular.svg" />
     <Content Include="Global.asax" />
@@ -221,6 +226,7 @@
     <Content Include="Views\Administrator\DeleteUser.cshtml" />
     <Content Include="Views\Administrator\Main.cshtml" />
     <Content Include="Views\Administrator\Partial\GetUser.cshtml" />
+    <Content Include="Views\Shared\NotFound.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
@@ -248,9 +254,9 @@
       <Project>{1c1875ab-447d-4d5a-a379-7708ed623fa8}</Project>
       <Name>Common</Name>
     </ProjectReference>
-    <ProjectReference Include="..\DALTheBookBusinessAccounting\DALTheBookBusinessAccounting.csproj">
-      <Project>{A55769EB-F51D-451F-9ACA-D0D2F6E66FBF}</Project>
-      <Name>DALTheBookBusinessAccounting</Name>
+    <ProjectReference Include="..\CompositionRoot\CompositionRoot.csproj">
+      <Project>{c01d4e01-bc0c-4f97-8927-d80d69b1c0a8}</Project>
+      <Name>CompositionRoot</Name>
     </ProjectReference>
   </ItemGroup>
   <PropertyGroup>

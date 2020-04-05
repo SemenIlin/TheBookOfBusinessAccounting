@@ -2,39 +2,38 @@
 using BLLTheBookOfBusinessAccounting.Mappers;
 using BLLTheBookOfBusinessAccounting.ModelsDto;
 using Common.Exceptions;
-using DALTheBookBusinessAccounting.Entities;
 using DALTheBookBusinessAccounting.Interfaces;
 using System.Collections.Generic;
 
 namespace BLLTheBookOfBusinessAccounting.Services
 {
-    public class CategoryService : IReadAndEditService<CategoryDto>
+    public class CategoryService : ICategoryService
     {
-        private readonly IReadAndEditRepository<Category> _categoryReadAndEditRepository;
+        private readonly ICategoryRepository _categoryRepository;
 
-        public CategoryService(IReadAndEditRepository<Category> categoryReadAndEditRepository)
+        public CategoryService(ICategoryRepository categoryRepository)
         {
-            _categoryReadAndEditRepository = categoryReadAndEditRepository;
+            _categoryRepository = categoryRepository;
         }
             
         public void Add(CategoryDto categoryDto)
         {
-            _categoryReadAndEditRepository.Create(categoryDto.MapToDbModel());
+            _categoryRepository.Create(categoryDto.MapToDbModel());
         }
 
         public void Update(CategoryDto categoryDto)
         {
-            _categoryReadAndEditRepository.Update(categoryDto.MapToDbModel());
+            _categoryRepository.Update(categoryDto.MapToDbModel());
         }
 
         public void Delete(int id)
         {
-            _categoryReadAndEditRepository.Delete(id);
+            _categoryRepository.Delete(id);
         }
 
         public CategoryDto Get(int id)
         {
-            var category = _categoryReadAndEditRepository.Get(id);
+            var category = _categoryRepository.Get(id);
             if(category == null)
             {
                 throw new NotFoundException("Данная категория не найдена.", "");
@@ -45,7 +44,7 @@ namespace BLLTheBookOfBusinessAccounting.Services
 
         public IEnumerable<CategoryDto> GetAll()
         {
-            return _categoryReadAndEditRepository.GetAll().MapToListDtoModels();
+            return _categoryRepository.GetAll().MapToListDtoModels();
         }
     }
 }

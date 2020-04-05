@@ -1,19 +1,22 @@
 ﻿using BLLTheBookOfBusinessAccounting.Interfaces;
-using System;
-using System.Collections.Generic;
+using BLLTheBookOfBusinessAccounting.ModelsDto;
+using Common.Exceptions;
 using System.Linq;
-using System.Web;
 using System.Web.Mvc;
 using TheBookBusinessAccounting.Extensions;
+using TheBookBusinessAccounting.Infrastructure;
 using TheBookBusinessAccounting.Models;
 using TheBookBusinessAccounting.Models.Pagination;
 
 namespace TheBookBusinessAccounting.Controllers
 {
+    [MyAuthorize(Roles = "Administrator")]
     public class AdministratorController : Controller
     {
         private readonly IUserService _userService;
         private readonly IRoleService _roleService;
+
+        private readonly Cache<UserDto> _userCache;
 
         public AdministratorController(
             IUserService userService,
@@ -22,36 +25,40 @@ namespace TheBookBusinessAccounting.Controllers
         {
             _roleService = roleService;
             _userService = userService;
+
+            _userCache = new Cache<UserDto>();
         }
 
         [HttpGet]
-        public ActionResult Main(string userName, int page = 1)
+        public ActionResult Main(string userName = "", int page = 1)
         {
-            const int pageSize = 10;
-            var allUsers = _userService.GetAll();
-            var userPerPages = allUsers.
-                Where(p => userName == null ||
-                      p.UserLogin == userName).
-                OrderBy(item => item.UserLogin).
-                Skip((page - 1) * pageSize).Take(pageSize);
-
-            var pageInfo = new PageInfo
+            try
             {
-                PageNumber = page,
-                PageSize = pageSize,
-                TotalItems = userName == null ?
-                   allUsers.Count() :
-                   allUsers.Where(p => p.UserName.ToLower().Contains(userName.ToLower())).Count()
-            };
+                const int pageSize = 10;
+                var allUsers = _userService.FindAll(userName);
+                var userPerPages = _userService.Find(userName, pageSize, page - 1);
 
-            var ivm = new MainViewModel
+                var pageInfo = new PageInfo
+                {
+                    PageNumber = page,
+                    PageSize = pageSize,
+                    TotalItems = allUsers.Count() 
+                };
+
+                var ivm = new MainViewModel
+                {
+                    PageInfo = pageInfo,
+                    UserViewModels = userPerPages.MapToListViewModels(),
+                    ActionName = "Main"
+                };
+
+                return View(ivm);
+            }
+            catch(NotFoundException exception)
             {
-                PageInfo = pageInfo,
-                UserViewModels = userPerPages.MapToListViewModels(),
-                ActionName = "Main"
-            };
-
-            return View(ivm);
+                ViewBag.ErrorMessage = exception.Message;
+                return View("Error");
+            }
         }
 
         [HttpPost]
@@ -72,16 +79,23 @@ namespace TheBookBusinessAccounting.Controllers
         [HttpPost]
         public ActionResult CreateUser(UserViewModel userViewModel)
         {
-            if(ModelState.IsValid)
+            try
             {
-                _userService.Add(userViewModel.MapToDtoModel());
-                var userDto = _userService.GetAll().LastOrDefault();
-                _userService.AddRoleForUser(userDto.Id, userViewModel.RoleId);
+                if (ModelState.IsValid)
+                {
+                    _userService.Add(userViewModel.MapToDtoModel(), out int id);
+                    _userService.AddRoleForUser(id, userViewModel.RoleId);
 
-                return RedirectToAction("Index", "User");
+                    return RedirectToAction("Index", "User");
+                }
+
+                return View(userViewModel);
             }
-
-            return View(userViewModel);
+            catch(NotFoundException exception)
+            {
+                ViewBag.ErrorMessage = exception.Message;
+                return View("Error");
+            }
         }
 
         [HttpGet]
@@ -89,16 +103,29 @@ namespace TheBookBusinessAccounting.Controllers
         {
             if(id == null)
             {
-                return HttpNotFound();
+                return View("NotFound");
             }
-
-            var userDto = _userService.Get(id.Value);
-            if(userDto == null)
+            try
             {
-                return HttpNotFound();
-            }
+                var userDto = _userCache.GetValue(id.Value);
+                if (userDto == null)
+                {
+                    userDto = _userService.Get(id.Value);
+                    _userCache.Add(userDto, userDto.Id);
+                }
 
-            return View(userDto.MapToViewModel());
+                if (userDto == null)
+                {
+                    return View("NotFound");
+                }
+
+                return View(userDto.MapToViewModel());
+            }
+            catch(NotFoundException exception)
+            {
+                ViewBag.ErrorMessage = exception.Message;
+                return View("Error");
+            }
         }
 
         [HttpPost]
@@ -124,16 +151,29 @@ namespace TheBookBusinessAccounting.Controllers
         {
             if(id == null)
             {
-                return HttpNotFound();
+                return View("NotFound");
             }
-
-            var userDto = _userService.Get(id.Value);
-            if(userDto == null)
+            try
             {
-                return HttpNotFound();
-            }
+                var userDto = _userCache.GetValue(id.Value);
+                if(userDto == null)
+                {
+                    userDto = _userService.Get(id.Value);
+                    _userCache.Add(userDto, userDto.Id);
+                }
 
-            return View(userDto.MapToViewModel());
+                if (userDto == null)
+                {
+                    return View("NotFound");
+                }
+
+                return View(userDto.MapToViewModel());
+            }
+            catch(NotFoundException exception)
+            {
+                ViewBag.ErrorMessage = exception.Message;
+                return View("Error");
+            }
         }
 
         [HttpPost]
@@ -142,49 +182,61 @@ namespace TheBookBusinessAccounting.Controllers
         {
             if(id == null)
             {
-                return HttpNotFound();
+                return View("NotFound");
             }
-
-            var userDto = _userService.Get(id.Value);
-            if(userDto == null)
+            try
             {
-                return HttpNotFound();
+                var userDto = _userCache.GetValue(id.Value);
+                if(userDto == null)
+                {
+                    userDto = _userService.Get(id.Value);
+                    _userCache.Add(userDto, userDto.Id);
+                }
+                
+                if (userDto == null)
+                {
+                    return View("NotFound");
+                }
+
+                _userService.Delete(id.Value);
+                return RedirectToAction("Main");
             }
-
-            _userService.Delete(id.Value);
-            return View("Main");
+            catch (NotFoundException exception)
+            {
+                ViewBag.ErrorMessage = exception.Message;
+                return View("Error");
+            }
         }
-
-        [NonAction]
+                
         private MainViewModel GetSearchUsers(string search, int page = 1)
         {
-            const int pageSize = 10;
-            var allUsers = _userService.GetAll();
-            var userPerPages = allUsers.
-                Where(p => search == null ||
-                      p.UserLogin.ToLower().Contains(search.ToLower())). 
-                OrderBy(item => item.UserLogin).
-                Skip((page - 1) * pageSize).Take(pageSize);
-
-            var pageInfo = new PageInfo
+            try
             {
-                PageNumber = page,
-                PageSize = pageSize,
-                TotalItems = search == null ?
-                   allUsers.Count() :
-                   allUsers.Where(p => p.UserLogin.ToLower().Contains(search.ToLower())).Count()
-            };
+                const int pageSize = 10;
+                var allUsers = _userService.FindAll(search);
+                var userPerPages = _userService.Find(search, pageSize, page - 1);
 
-            var mvm = new MainViewModel()
+                var pageInfo = new PageInfo
+                {
+                    PageNumber = page,
+                    PageSize = pageSize,
+                    TotalItems = allUsers.Count()
+                };
+
+                var mvm = new MainViewModel()
+                {
+                    PageInfo = pageInfo,
+                    UserViewModels = userPerPages.MapToListViewModels(),
+                    ActionName = "SearchUser",
+                    SearchText = search
+                };
+
+                return mvm;
+            }
+            catch 
             {
-                PageInfo = pageInfo,
-                UserViewModels = userPerPages.MapToListViewModels(),
-                ActionName = "SearchUser",
-                SearchText = search
-            };
-
-            return mvm;
+                return null;
+            }
         }
-
     }
 }

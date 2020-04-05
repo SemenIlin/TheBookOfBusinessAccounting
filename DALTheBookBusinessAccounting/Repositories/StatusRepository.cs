@@ -2,17 +2,15 @@
 using DALTheBookBusinessAccounting.Entities;
 using DALTheBookBusinessAccounting.Interfaces;
 using System.Collections.Generic;
-using System.Configuration;
 using System.Data.SqlClient;
 
 namespace DALTheBookBusinessAccounting.Repositories
 {
-    public class StatusRepository : IStatusRepository
+    public class StatusRepository : BaseRepository, IStatusRepository
     {
         private const int ID = 0;
         private const int TITLE = 1;
 
-        private readonly string connectionString = ConfigurationManager.ConnectionStrings["TheBookOfBusinessAccountingContext"].ConnectionString;
         private readonly ProcForStatus _procForStatus;
 
         public StatusRepository()

@@ -1,4 +1,9 @@
 ﻿using BLLTheBookOfBusinessAccounting.Interfaces;
+using BLLTheBookOfBusinessAccounting.ModelsDto;
+using Newtonsoft.Json;
+using System;
+using System.Linq;
+using System.Web;
 using System.Web.Mvc;
 using System.Web.Security;
 using TheBookBusinessAccounting.Extensions;
@@ -32,7 +37,7 @@ namespace TheBookBusinessAccounting.Controllers
                
                 if (user != null)
                 {
-                    FormsAuthentication.SetAuthCookie(loginModel.Login, true);
+                    CreateCookie(user);
                     return RedirectToAction("Index", "User");
                 }
                 else
@@ -60,11 +65,12 @@ namespace TheBookBusinessAccounting.Controllers
                 
                 if (user == null)
                 {
-                    _userService.Add(registerModel.MapToDtoModel());
+                    _userService.Add(registerModel.MapToDtoModel(), out int id);
+                    _userService.AddRoleForUser(id, 1);
 
                     if (user != null)
                     {
-                        FormsAuthentication.SetAuthCookie(registerModel.Login, true);
+                        CreateCookie(user);
                         return RedirectToAction("Index", "User");
                     }
                 }
@@ -82,6 +88,26 @@ namespace TheBookBusinessAccounting.Controllers
         {
             FormsAuthentication.SignOut();
             return RedirectToAction("Index", "Home");
+        }
+
+        private void CreateCookie(UserDto userDto)
+        {
+            var serialize = new SerializeModel
+            {
+                Login = userDto.UserLogin,
+                Roles = userDto.RoleDtos.MapToCollectionViewModels()
+            };
+
+            var data = JsonConvert.SerializeObject(serialize);
+
+            var ticket = new FormsAuthenticationTicket(1, userDto.UserLogin, DateTime.Now, DateTime.Now.AddMinutes(10),
+                false, data);
+
+            var encryptTicket = FormsAuthentication.Encrypt(ticket);
+
+            var cookie = new HttpCookie(FormsAuthentication.FormsCookieName, encryptTicket);
+
+            HttpContext.Response.Cookies.Add(cookie);
         }
 
     }

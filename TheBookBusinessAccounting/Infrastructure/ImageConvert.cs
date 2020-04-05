@@ -1,4 +1,5 @@
-﻿using System.Web;
+﻿using System.IO;
+using System.Web;
 
 namespace TheBookBusinessAccounting.Infrastructure
 {
@@ -7,8 +8,7 @@ namespace TheBookBusinessAccounting.Infrastructure
         public static byte[] ImageToByteArray(HttpPostedFileBase uploadImage)
         {
             byte[] imageData = null;
-            // считываем переданный файл в массив байтов
-            using (var binaryReader = new System.IO.BinaryReader(uploadImage.InputStream))
+            using (var binaryReader = new BinaryReader(uploadImage.InputStream))
             {
                 imageData = binaryReader.ReadBytes(uploadImage.ContentLength);
             }
@@ -18,25 +18,7 @@ namespace TheBookBusinessAccounting.Infrastructure
 
         public static string GetImageExtension(HttpPostedFileBase uploadImage)
         {
-            string mirrorExtensionImage = System.String.Empty;
-            string extensionImage = System.String.Empty;
-
-            for (int i = uploadImage.FileName.Length - 1; i > 0; --i)
-            {                
-                if (uploadImage.FileName[i] == '.')
-                {
-                    break;
-                }
-
-                mirrorExtensionImage += uploadImage.FileName[i];
-            }
-
-            for (int i = mirrorExtensionImage.Length - 1; i >= 0; --i)
-            {
-                extensionImage += mirrorExtensionImage[i];               
-            }
-
-            return extensionImage;
+            return Path.GetExtension(uploadImage.FileName);
         }
     }
 }

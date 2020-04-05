@@ -1,18 +1,24 @@
 ﻿using BLLTheBookOfBusinessAccounting.Interfaces;
+using BLLTheBookOfBusinessAccounting.ModelsDto;
+using Common.Exceptions;
 using System.Linq;
 using System.Web.Mvc;
 using TheBookBusinessAccounting.Extensions;
+using TheBookBusinessAccounting.Infrastructure;
 using TheBookBusinessAccounting.Models;
 using TheBookBusinessAccounting.Models.Pagination;
 
 namespace TheBookBusinessAccounting.Controllers
 {
-    //[Authorize(Roles = "User, Editor, Administrator")]
+    [MyAuthorize(Roles = "User")]
     public class UserController : Controller
     {
         private readonly IRoleService _roleService;
         private readonly IUserService _userService;
         private readonly IItemService _itemService;
+
+        private readonly Cache<ItemDto> _itemCache;
+        private readonly Cache<UserDto> _userCache;
 
         public UserController(
             IRoleService roleService,
@@ -23,53 +29,76 @@ namespace TheBookBusinessAccounting.Controllers
             _roleService = roleService;
             _userService = userService;
             _itemService = itemService;
+
+            _itemCache = new Cache<ItemDto>();
+            _userCache = new Cache<UserDto>();
         }
 
         [HttpGet]
-        public ActionResult Index(string category, int page = 1)
+        public ActionResult Index(string category = "", int page = 1)
         {
-            const int pageSize = 10; 
-            var allItems = _itemService.GetAll();
-            var itemPerPages = allItems.
-                Where(p => category == null ||
-                      p.Category == category).
-                OrderBy(item => item.Title).
-                Skip((page - 1) * pageSize).Take(pageSize);
-
-            var pageInfo = new PageInfo
+            try
             {
-                PageNumber = page,
-                PageSize = pageSize,
-                TotalItems = category == null ?
-                   allItems.Count() :
-                   allItems.Where(p => p.Category.ToLower().Contains(category.ToLower())).Count()
-            };
+                const int pageSize = 10;
 
-            var ivm = new IndexViewModel
+                var itemsPerPage = _itemService.Find("", pageSize, page - 1, 0, category);
+                var allItems = _itemService.Find("", 0, category);
+
+                var pageInfo = new PageInfo
+                {
+                    PageNumber = page,
+                    PageSize = pageSize,
+                    TotalItems = allItems.Count()
+                };
+
+                var ivm = new IndexViewModel
+                {
+                    PageInfo = pageInfo,
+                    ItemViewModels = itemsPerPage.MapToListViewModels(),
+                    ActionName = "Index",
+                    CurrentCategory = category
+                };
+
+                return View(ivm);
+            }
+            catch(NotFoundException exception)
             {
-                PageInfo = pageInfo,
-                ItemViewModels = itemPerPages.MapToListViewModels(),
-                ActionName = "Index"
-            };
-
-            return View(ivm);            
+                ViewBag.ErrorMessage = exception.Message;
+                return View("Error");
+            }
         }
 
         [HttpGet]
         [ActionName("SearchItem")]
-        public ActionResult GetSearchItem(string search, int statusId = 4, int page = 1)
+        public ActionResult GetSearchItem(string search, string category = "", int statusId = 0, int page = 1)
         {
-            var ivm = GetSearchItems(search, statusId, page);
+            try
+            {
+                var ivm = GetSearchItems(search, statusId, page, category);
 
-            return View("Index", ivm);
+                return View("Index", ivm);
+            }
+            catch(NotFoundException exception)
+            {
+                ViewBag.ErrorMessage = exception.Message;
+                return View("Error");
+            }
         }
 
         [HttpPost]
-        public ActionResult SearchItem(string search, int statusId = 4, int page = 1)
+        public ActionResult SearchItem(string search, string category = "", int statusId = 0, int page = 1)
         {
-            var ivm = GetSearchItems(search, statusId, page);
+            try
+            {
+                var ivm = GetSearchItems(search, statusId, page, category);
 
-            return View("Index", ivm);
+                return View("Index", ivm);
+            }
+            catch(NotFoundException exception)
+            {
+                ViewBag.ErrorMessage = exception.Message;
+                return View("Error");
+            }
         }
 
         [HttpGet]
@@ -77,98 +106,103 @@ namespace TheBookBusinessAccounting.Controllers
         {
             if (id == null)
             {
-                return HttpNotFound();
+                return View("NotFound");
             }
-
-            var item = _itemService.Get(id.Value);
-            if (item == null)
+            try
             {
-                return HttpNotFound();
-            }
+                var item = _itemCache.GetValue(id.Value);
+                if(item == null)
+                {
+                    item = _itemService.Get(id.Value);
+                    _itemCache.Add(item, item.Id);
+                }
+                
+                if (item == null)
+                {
+                    return View("NotFound");
+                }
 
-            return View(item.MapToViewModel());
+                return View(item.MapToViewModel());
+            }
+            catch(NotFoundException exception)
+            {
+                ViewBag.ErrorMessage = exception.Message;
+                return View("Error");
+            }
         }
 
         [HttpGet]
         public ActionResult EditUser()
         {
-            var userDto = _userService.Find(User.Identity.Name);
-
-            if(userDto == null)
+            try
             {
-                return HttpNotFound();
-            }
+                var userDto = _userCache.GetValue(User.Identity.Name);
+                if(userDto == null)
+                {
+                    userDto = _userService.Find(User.Identity.Name);
+                    _userCache.Add(userDto, userDto.UserName);
+                }
+                
 
-            var userViewModel = userDto.MapToViewModel();
-            return View(userViewModel);
+                if (userDto == null)
+                {
+                    return View("NotFound");
+                }
+
+                var userViewModel = userDto.MapToViewModel();
+                return View(userViewModel);
+            }
+            catch(NotFoundException exception)
+            {
+                ViewBag.ErrorMessage = exception.Message;
+                return View("Error");
+            }
         }
 
         [HttpPost]
         public ActionResult EditUser(UserViewModel userViewModel)
         {
-            var roles = _roleService.GetAllRolesOfUser(userViewModel.UserLogin);
-            userViewModel.Roles = roles.MapToCollectionViewModels();
-
-            if(ModelState.IsValid)
+            try
             {
-                _userService.Update(userViewModel.MapToDtoModel());
+                var roles = _roleService.GetAllRolesOfUser(userViewModel.UserLogin);
+                userViewModel.Roles = roles.MapToCollectionViewModels();
 
-                return RedirectToAction("Index");
-            }            
+                if (ModelState.IsValid)
+                {
+                    _userService.Update(userViewModel.MapToDtoModel());
 
-            return View(userViewModel);
+                    return RedirectToAction("Index");
+                }
+
+                return View(userViewModel);
+            }
+            catch(NotFoundException exception)
+            {
+                ViewBag.ErrorMessage = exception.Message;
+                return View("Error");
+            }
         }
 
-        [NonAction]
-        private IndexViewModel GetSearchItems(string search, int statusId = 4, int page = 1)
+        private IndexViewModel GetSearchItems(string search, int statusId = 0, int page = 1, string category = "")
         {
-            const int pageSize = 10; 
-            var allItems = _itemService.GetAll();
-            var itemPerPages = allItems.
-                Where(p => search == null ||
-                      p.Category.ToLower().Contains(search.ToLower()) ||
-                      p.Status.ToLower().Contains(search.ToLower()) ||
-                      p.Title.ToLower().Contains(search.ToLower()));
+            const int pageSize = 10;
+            var itemsPerPage = _itemService.Find(search, pageSize, page - 1, statusId, category);
+            var allItems = _itemService.Find(search, statusId, category);
 
-            var pageInfo = new PageInfo()
+            var pageInfo = new PageInfo
             {
                 PageNumber = page,
-                PageSize = pageSize
+                PageSize = pageSize,
+                TotalItems = allItems.Count()
             };
-
-            if (statusId == 4)
-            {
-                itemPerPages = itemPerPages.OrderBy(item => item.Title).
-                    Skip((page - 1) * pageSize).Take(pageSize);
-
-                pageInfo.TotalItems = search == null ?
-                   allItems.Count() :
-                   allItems.Where(
-                       p => p.Category.ToLower().Contains(search.ToLower()) ||
-                       p.Status.ToLower().Contains(search.ToLower()) ||
-                       p.Title.ToLower().Contains(search.ToLower())).Count();
-            }
-            else
-            {
-                itemPerPages = itemPerPages.Where(p => p.StatusId == statusId).
-                    OrderBy(item => item.Title).
-                    Skip((page - 1) * pageSize).Take(pageSize);
-
-                pageInfo.TotalItems = search == null ?
-                  allItems.Count() :
-                  allItems.Where(
-                      p => p.Category.ToLower().Contains(search.ToLower()) ||
-                      p.Status.ToLower().Contains(search.ToLower()) ||
-                      p.Title.ToLower().Contains(search.ToLower())).
-                      Where(p => p.StatusId == statusId).Count();
-            }            
 
             var ivm = new IndexViewModel
             {
                 PageInfo = pageInfo,
-                ItemViewModels = itemPerPages.MapToListViewModels(),
+                ItemViewModels = itemsPerPage.MapToListViewModels(),
                 ActionName = "SearchItem",
-                SearchText = search
+                SearchText = search,
+                CurrentCategory = category
             };
 
             return ivm;

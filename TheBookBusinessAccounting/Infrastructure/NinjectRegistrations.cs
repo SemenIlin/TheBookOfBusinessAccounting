@@ -1,30 +1,24 @@
-﻿using BLLTheBookOfBusinessAccounting.Interfaces;
-using BLLTheBookOfBusinessAccounting.ModelsDto;
-using BLLTheBookOfBusinessAccounting.Services;
-using DALTheBookBusinessAccounting.Entities;
-using DALTheBookBusinessAccounting.Interfaces;
-using DALTheBookBusinessAccounting.Repositories;
+﻿using CompositionRoot.NinjectRegistrations;
 using Ninject.Modules;
 
 namespace TheBookBusinessAccounting.Infrastructure
 {
     public class NinjectRegistrations : NinjectModule
     {
+        private readonly RegistrationDAL _registrationDAL;
+        private readonly RegistrationBLL _registrationBLL;
+
+        public NinjectRegistrations()
+        {
+            _registrationDAL = new RegistrationDAL();
+            _registrationBLL = new RegistrationBLL();
+        }
+         
+
         public override void Load()
         {
-            Bind<IReadAndEditRepository<Category>>().To<CategoryRepository>();
-            Bind<IReadAndEditRepository<Image>>().To<ImageRepository>();
-            Bind<IStatusRepository>().To<StatusRepository>();
-            Bind<IItemRepository>().To<ItemRepository>();
-            Bind<IUserRepository>().To<UserRepository>();
-            Bind<IRoleRepository>().To<RoleRepository>();
-
-            Bind<IReadAndEditService<CategoryDto>>().To<CategoryService>();
-            Bind<IReadAndEditService<ImageDto>>().To<ImageService>();
-            Bind<IStatusService>().To<StatusService>();
-            Bind<IItemService>().To<ItemService>();
-            Bind<IUserService>().To<UserService>();
-            Bind<IRoleService>().To<RoleService>();
+            _registrationDAL.OnLoad(this.Kernel);
+            _registrationBLL.OnLoad(this.Kernel);
         }
     }
 }
