@@ -168,7 +168,7 @@ USE TheBookOfBusinessAccounting;
 --@Screen IMAGE,
 --@ScreenFormat VARCHAR(5),
 --@ItemId INT,
---@Id INT
+--@Id INT OUTPUT
 --AS BEGIN
 --INSERT INTO Images(Screen, ScreenFormat, ItemId)
 --VALUES (@Screen, @ScreenFormat, @ItemId)

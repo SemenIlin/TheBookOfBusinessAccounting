@@ -154,7 +154,7 @@ namespace DALTheBookBusinessAccounting.BuilderForProc
         {
             SqlParameter idParam = new SqlParameter
             {
-                ParameterName = "@id",
+                ParameterName = "@Id",
                 SqlDbType = SqlDbType.Int,
                 Direction = ParameterDirection.Output
             };
