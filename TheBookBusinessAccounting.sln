@@ -11,6 +11,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "BLLTheBookOfBusinessAccount
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Common", "Common\Common.csproj", "{1C1875AB-447D-4D5A-A379-7708ED623FA8}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CompositionRoot", "CompositionRoot\CompositionRoot.csproj", "{C01D4E01-BC0C-4F97-8927-D80D69B1C0A8}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -33,6 +35,10 @@ Global
 		{1C1875AB-447D-4D5A-A379-7708ED623FA8}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{1C1875AB-447D-4D5A-A379-7708ED623FA8}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{1C1875AB-447D-4D5A-A379-7708ED623FA8}.Release|Any CPU.Build.0 = Release|Any CPU
+		{C01D4E01-BC0C-4F97-8927-D80D69B1C0A8}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{C01D4E01-BC0C-4F97-8927-D80D69B1C0A8}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{C01D4E01-BC0C-4F97-8927-D80D69B1C0A8}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{C01D4E01-BC0C-4F97-8927-D80D69B1C0A8}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

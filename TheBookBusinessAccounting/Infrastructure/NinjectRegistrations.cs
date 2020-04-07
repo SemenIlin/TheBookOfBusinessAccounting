@@ -13,7 +13,6 @@ namespace TheBookBusinessAccounting.Infrastructure
             _registrationDAL = new RegistrationDAL();
             _registrationBLL = new RegistrationBLL();
         }
-         
 
         public override void Load()
         {

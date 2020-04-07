@@ -7,13 +7,10 @@ namespace TheBookBusinessAccounting.Infrastructure
     {
         public static byte[] ImageToByteArray(HttpPostedFileBase uploadImage)
         {
-            byte[] imageData = null;
             using (var binaryReader = new BinaryReader(uploadImage.InputStream))
             {
-                imageData = binaryReader.ReadBytes(uploadImage.ContentLength);
+                return binaryReader.ReadBytes(uploadImage.ContentLength);
             }
-
-            return imageData;
         }
 
         public static string GetImageExtension(HttpPostedFileBase uploadImage)

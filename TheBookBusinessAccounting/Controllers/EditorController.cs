@@ -82,7 +82,6 @@ namespace TheBookBusinessAccounting.Controllers
 
                         var imageDto = imageVM.MapToDtoModel();
                         _imageService.Add(imageDto, out int imageId);
-                        _imageCache.Add(imageDto, imageId);
                     }
 
                     return RedirectToAction("Index", "User");
@@ -153,11 +152,13 @@ namespace TheBookBusinessAccounting.Controllers
                             ScreenFormat = itemViewModel.ScreenFormat,
                             ItemId = itemViewModel.Id
                         };
+
                         _imageService.Add(imageVM.MapToDtoModel(), out int imageId);
-                        _imageCache.Add(imageVM.MapToDtoModel(), imageId);
                     }
 
+                    var itemId = itemViewModel.Id;
                     _itemService.Update(itemViewModel.MapToDtoModel());
+                    _itemCache.Update(_itemService.Get(itemId), itemId);
 
                     return RedirectToAction("Index", "User");
                 }
@@ -274,7 +275,11 @@ namespace TheBookBusinessAccounting.Controllers
                 itemDto = _itemService.Get(itemId.Value);
                 _itemCache.Update(itemDto, itemDto.Id);
 
-                return RedirectToAction("GetItem", "User", itemDto.MapToViewModel());
+                var itemViewModel = itemDto.MapToViewModel();
+                itemViewModel.Categories = DictionaryOfCategories();
+                itemViewModel.Statuses = DictionaryOfStatuses();
+
+                return View("EditItem", itemViewModel);
             }
             catch(NotFoundException exception)
             {
@@ -314,8 +319,9 @@ namespace TheBookBusinessAccounting.Controllers
         {
             if (ModelState.IsValid)
             {
-                _userService.Update(userViewModel.MapToDtoModel());
-                _userCache.Update(userViewModel.MapToDtoModel(), userViewModel.Id);
+                var userDto = userViewModel.MapToDtoModel();
+                _userService.Update(userDto);
+                _userCache.Update(userDto, userViewModel.Id);
 
                 return RedirectToAction("Index", "User");
             }

@@ -169,7 +169,9 @@ namespace TheBookBusinessAccounting.Controllers
 
                 if (ModelState.IsValid)
                 {
-                    _userService.Update(userViewModel.MapToDtoModel());
+                    var userDto = userViewModel.MapToDtoModel();
+                    _userService.Update(userDto);
+                    _userCache.Update(userDto, userDto.Id);
 
                     return RedirectToAction("Index");
                 }

@@ -1,84 +1,92 @@
 ﻿@model TheBookBusinessAccounting.Models.ItemViewModel
 
 @{
-    ViewBag.Title = "AddItem";
+	ViewBag.Title = "AddItem";
 }
+<div class="col-xs-offset-3">
+	<h2>Добавить предмет</h2>
 
-<h2>Добавить предмет</h2>
+	@using (Html.BeginForm("AddItem", "Editor", FormMethod.Post, new { enctype = "multipart/form-data" }))
+	{
+		@Html.AntiForgeryToken()
 
-@using (Html.BeginForm("AddItem", "Item", FormMethod.Post, new { enctype = "multipart/form-data" }))
-{
-    @Html.AntiForgeryToken()
-    
-<div class="form-horizontal">
-	@Html.ValidationSummary(true, "", new { @class = "text-danger" })
-	<div class="form-group">
-		@Html.LabelFor(model => model.Title, htmlAttributes: new { @class = "control-label col-md-2" })
-		<div class="col-md-10">
-			@Html.EditorFor(model => model.Title, new { htmlAttributes = new { @class = "form-control" } })
-			@Html.ValidationMessageFor(model => model.Title, "", new { @class = "text-danger" })
-		</div>
-	</div>
+		<div class="form-horizontal">
+			@Html.ValidationSummary(true, "", new { @class = "text-danger" })
+			<div class="form-group">
+				@Html.LabelFor(model => model.Title, htmlAttributes: new { @class = "control-label col-md-2" })
+				<div class="col-md-10">
+					@Html.EditorFor(model => model.Title, new { htmlAttributes = new { @class = "form-control" } })
+					@Html.ValidationMessageFor(model => model.Title, "", new { @class = "text-danger" })
+				</div>
+			</div>
 
-	<div class="form-group">
-		@Html.LabelFor(model => model.InventoryNumber, htmlAttributes: new { @class = "control-label col-md-2" })
-		<div class="col-md-10">
-			@Html.EditorFor(model => model.InventoryNumber, new { htmlAttributes = new { @class = "form-control" } })
-			@Html.ValidationMessageFor(model => model.InventoryNumber, "", new { @class = "text-danger" })
-		</div>
-	</div>
+			<div class="form-group">
+				@Html.LabelFor(model => model.InventoryNumber, htmlAttributes: new { @class = "control-label col-md-2" })
+				<div class="col-md-10">
+					@Html.EditorFor(model => model.InventoryNumber, new { htmlAttributes = new { @class = "form-control" } })
+					@Html.ValidationMessageFor(model => model.InventoryNumber, "", new { @class = "text-danger" })
+				</div>
+			</div>
 
-	<div class="form-group">
-		@Html.LabelFor(model => model.LocationOfItem, htmlAttributes: new { @class = "control-label col-md-2" })
-		<div class="col-md-10">
-			@Html.EditorFor(model => model.LocationOfItem, new { htmlAttributes = new { @class = "form-control" } })
-			@Html.ValidationMessageFor(model => model.LocationOfItem, "", new { @class = "text-danger" })
-		</div>
-	</div>
+			<div class="form-group">
+				@Html.LabelFor(model => model.LocationOfItem, htmlAttributes: new { @class = "control-label col-md-2" })
+				<div class="col-md-10">
+					@Html.EditorFor(model => model.LocationOfItem, new { htmlAttributes = new { @class = "form-control" } })
+					@Html.ValidationMessageFor(model => model.LocationOfItem, "", new { @class = "text-danger" })
+				</div>
+			</div>
 
-	<div class="form-group">
-		@Html.LabelFor(model => model.About, htmlAttributes: new { @class = "control-label col-md-2" })
-		<div class="col-md-10">
-			@Html.EditorFor(model => model.About, new { htmlAttributes = new { @class = "form-control" } })
-			@Html.ValidationMessageFor(model => model.About, "", new { @class = "text-danger" })
-		</div>
-	</div>
+			<div class="form-group">
+				@Html.LabelFor(model => model.About, htmlAttributes: new { @class = "control-label col-md-2" })
+				<div class="col-md-10">
+					@Html.EditorFor(model => model.About, new { htmlAttributes = new { @class = "form-control" } })
+					@Html.ValidationMessageFor(model => model.About, "", new { @class = "text-danger" })
+				</div>
+			</div>
 
-	<div class="form-group">
-		@Html.LabelFor(model => model.CategoryId, htmlAttributes: new { @class = "control-label col-md-2" })
-		<div class="col-md-10">
-			@Html.DropDownListFor(model => model.CategoryId, new SelectList(Model.Categories, "Key", "Value") as IEnumerable<SelectListItem>)
-			@Html.ValidationMessageFor(model => model.CategoryId, "", new { @class = "text-danger" })
-		</div>
-	</div>
+			<div class="form-group">
+				@Html.LabelFor(model => model.CategoryId, htmlAttributes: new { @class = "control-label col-md-2" })
+				<div class="col-md-10">
+					@Html.DropDownListFor(model => model.CategoryId, new SelectList(Model.Categories, "Key", "Value") as IEnumerable<SelectListItem>)
+					@Html.ValidationMessageFor(model => model.CategoryId, "", new { @class = "text-danger" })
+				</div>
+			</div>
 
-	<div class="form-group">
-		@Html.LabelFor(model => model.StatusId, htmlAttributes: new { @class = "control-label col-md-2" })
-		<div class="col-md-10">
-			@Html.DropDownListFor(model => model.StatusId, new SelectList(Model.Statuses, "Key", "Value") as IEnumerable<SelectListItem>)
-			@Html.ValidationMessageFor(model => model.StatusId, "", new { @class = "text-danger" })
-		</div>
-	</div>
-	<fieldset>
-		<div class="form-group">
-			<div class="editor-label col-md-2">Файл изображения</div>
-			<div class="editor-field col-md-10 ">
-				<input type="file" name="uploadImage" />
+			<div class="form-group">
+				@Html.LabelFor(model => model.StatusId, htmlAttributes: new { @class = "control-label col-md-2" })
+				<div class="col-md-10">
+					@Html.DropDownListFor(model => model.StatusId, new SelectList(Model.Statuses, "Key", "Value") as IEnumerable<SelectListItem>)
+					@Html.ValidationMessageFor(model => model.StatusId, "", new { @class = "text-danger" })
+				</div>
+			</div>
+
+			<div class="form-group">
+				<div class="col-md-offset-2 col-md-10">
+					<input type="submit" value="Создать" class="btn btn-default" />
+				</div>
 			</div>
 		</div>
+	}
+
+	@using (Html.BeginForm("AddImage", "Image", FormMethod.Post, new { enctype = "multipart/form-data" }))
+	{
+		@Html.AntiForgeryToken()
+		<fieldset>
+			<div class="form-group">
+				<div class="editor-label col-md-2">Файл изображения</div>
+				<div class="editor-field col-md-10 ">
+					<input type="file" name="uploadImage" />
+				</div>
+			</div>
+			<p>
+				<input type="submit" value="Добавить" />
+			</p>
+		</fieldset>
+	}
+
+	<div>
 		<p>
-			<input type="submit" value="Добавить" />
+			<a href="@Url.Action("Index", "User")">Назад</a>
 		</p>
-	</fieldset>
-
-		<div class="form-group">
-			<div class="col-md-offset-2 col-md-10">
-				<input type="submit" value="Создать" class="btn btn-default" />
-			</div>
-		</div>
 	</div>
-}
-
-<div>
-    @Html.ActionLink("Назад", "Index")
 </div>

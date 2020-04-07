@@ -83,8 +83,10 @@ namespace TheBookBusinessAccounting.Controllers
             {
                 if (ModelState.IsValid)
                 {
-                    _userService.Add(userViewModel.MapToDtoModel(), out int id);
+                    var userDto = userViewModel.MapToDtoModel();
+                    _userService.Add(userDto, out int id);
                     _userService.AddRoleForUser(id, userViewModel.RoleId);
+                    _userCache.Add(userDto, id);
 
                     return RedirectToAction("Index", "User");
                 }
@@ -137,8 +139,10 @@ namespace TheBookBusinessAccounting.Controllers
 
             if(ModelState.IsValid)
             {
+                var userDto = userViewModel.MapToDtoModel();
                 _userService.DeleteRoleFromUser(userViewModel.Id, userViewModel.RoleId);
-                _userService.Update(userViewModel.MapToDtoModel());
+                _userService.Update(userDto);
+                _userCache.Update(userDto, userViewModel.Id);
 
                 return RedirectToAction ("Main");
             }

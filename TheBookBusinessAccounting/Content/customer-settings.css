@@ -17,3 +17,14 @@
 	-webkit-box-sizing: border-box;
 	box-sizing: border-box;
 }
+
+.textarea {
+	width: 90%; 
+	height: 200px; 
+	resize: none; 
+}
+
+.block {
+	width: 70%;
+}
+

@@ -59,28 +59,35 @@ namespace TheBookBusinessAccounting.Controllers
         [ValidateAntiForgeryToken]
         public ActionResult Registration(RegisterModel registerModel)
         {
-            if (ModelState.IsValid)
+            try
             {
-                var user = _userService.Find(registerModel.Login, registerModel.Password);
-                
-                if (user == null)
+                if (ModelState.IsValid)
                 {
-                    _userService.Add(registerModel.MapToDtoModel(), out int id);
-                    _userService.AddRoleForUser(id, 1);
+                    var user = _userService.Find(registerModel.Login, registerModel.Password);
 
-                    if (user != null)
+                    if (user == null)
                     {
-                        CreateCookie(user);
-                        return RedirectToAction("Index", "User");
+                        _userService.Add(registerModel.MapToDtoModel(), out int id);
+                        _userService.AddRoleForUser(id, 1);
+
+                        if (user != null)
+                        {
+                            CreateCookie(user);
+                            return RedirectToAction("Index", "User");
+                        }
+                    }
+                    else
+                    {
+                        ModelState.AddModelError("", "Пользователь с таким логином уже существует");
                     }
                 }
-                else
-                {
-                    ModelState.AddModelError("", "Пользователь с таким логином уже существует");
-                }
-            }
 
-            return View(registerModel);
+                return View(registerModel);
+            }
+            catch
+            {
+                return View("NotFound");
+            }
         }
 
         [HttpGet]

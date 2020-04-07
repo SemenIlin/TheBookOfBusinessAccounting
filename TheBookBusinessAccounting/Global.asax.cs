@@ -35,10 +35,9 @@ namespace TheBookBusinessAccounting
 
             if (cookieUser != null)
             {
-                var decryptCookieUser = FormsAuthentication.Decrypt(cookieUser.Value);//.Name.TrimStart().
-                                                                                      //Replace("=","\":\"").Replace("&","\",\"").Replace("\"[","[");
+                var decryptCookieUser = FormsAuthentication.Decrypt(cookieUser.Value);                                                                                     
 
-                var deserializeUser = JsonConvert.DeserializeObject<SerializeModel>(decryptCookieUser.UserData);//("{\"" + decryptCookieUser + "}");
+                var deserializeUser = JsonConvert.DeserializeObject<SerializeModel>(decryptCookieUser.UserData);
                 var user = new UserViewModel
                 { 
                     UserLogin = deserializeUser.Login,
