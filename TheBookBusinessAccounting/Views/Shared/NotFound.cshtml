@@ -21,8 +21,15 @@
 			<div class="notfound-404">
 				<div></div>
 				<h1>404</h1>
-			</div>
-			<h2>Страница не найдена</h2>
+			</div>		
+			@if (ViewBag.ErrorMessage != null)
+			{
+				<h2>@ViewBag.ErrorMessage</h2>
+			}
+			else
+			{
+				<h2>Страница не найдена</h2>
+			}
 			<a href="@Url.Action("Index","User")">Домой</a>
 		</div>
 	</div>

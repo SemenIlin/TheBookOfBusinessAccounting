@@ -57,7 +57,7 @@ namespace TheBookBusinessAccounting.Controllers
             catch(NotFoundException exception)
             {
                 ViewBag.ErrorMessage = exception.Message;
-                return View("Error");
+                return View("NotFound");
             }
         }
 
@@ -96,7 +96,7 @@ namespace TheBookBusinessAccounting.Controllers
             catch(NotFoundException exception)
             {
                 ViewBag.ErrorMessage = exception.Message;
-                return View("Error");
+                return View("NotFound");
             }
         }
 
@@ -126,7 +126,7 @@ namespace TheBookBusinessAccounting.Controllers
             catch(NotFoundException exception)
             {
                 ViewBag.ErrorMessage = exception.Message;
-                return View("Error");
+                return View("NotFound");
             }
         }
 
@@ -176,7 +176,7 @@ namespace TheBookBusinessAccounting.Controllers
             catch(NotFoundException exception)
             {
                 ViewBag.ErrorMessage = exception.Message;
-                return View("Error");
+                return View("NotFound");
             }
         }
 
@@ -208,7 +208,7 @@ namespace TheBookBusinessAccounting.Controllers
             catch (NotFoundException exception)
             {
                 ViewBag.ErrorMessage = exception.Message;
-                return View("Error");
+                return View("NotFound");
             }
         }
                 
